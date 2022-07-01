@@ -50,7 +50,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
                 DraftNotification notification = context.GetInput<DraftNotification>();
                 string notificationId = await context.CallActivityAsync<string>("SendApiWrapper_Work", notification);
                 string status = await context.CallActivityAsync<string>("SendApiWrapper_CheckStatus", notificationId);
-                int maxMinutes = 60;
+                int maxMinutes = 120;
 
                 for (int i = 0; i < maxMinutes; i++)
                 {

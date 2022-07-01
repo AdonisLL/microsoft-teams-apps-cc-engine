@@ -211,6 +211,14 @@
         "description": "A GUID used to identify the role assignment. This is Default value."
       }
     },
+    "serviceBusApiSendFuncRoleNameGuid": {
+      "defaultValue": "83d662f7-e73e-491a-b3d9-2c08631CBee9",
+      "minLength": 1,
+      "type": "String",
+      "metadata": {
+        "description": "A GUID used to identify the role assignment. This is Default value."
+      }
+    },
     "serviceBusSendFuncRoleNameGuid": {
       "defaultValue": "960365a2-c7bf-4ff3-8887-efa86fe4a163",
       "minLength": 1,
@@ -237,6 +245,14 @@
     },
     "storageAccountPrepFuncRoleNameGuid": {
       "defaultValue": "9332a9e9-93f4-48d9-8121-d279f30a732e",
+      "minLength": 1,
+      "type": "String",
+      "metadata": {
+        "description": "A GUID used to identify the role assignment. This is Default value."
+      }
+    },
+    "storageAccountApiSendFuncRoleNameGuid": {
+      "defaultValue": "3755a7b5-7df4-43f2-8800-5a1b4005be76",
       "minLength": 1,
       "type": "String",
       "metadata": {
@@ -921,7 +937,7 @@
                 "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), variables('ServiceBusSecretName'))]"
             ],
             "properties": {
-                "PROJECT": "Source\\CompanyCommunicator.Data.Func\\Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj",
+                "PROJECT": "Source\\Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func\\Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj",
                 "SITE_ROLE": "function",
                 "i18n:DefaultCulture": "[variables('i18n:DefaultCulture')]",
                 "i18n:SupportedCultures": "[variables('i18n:SupportedCultures')]",
@@ -1232,7 +1248,7 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2020-04-01-preview",
-      "name": "[parameters('ServiceBusDataFuncRoleNameGuid')]",
+      "name": "[parameters('ServiceBusApiSendFuncRoleNameGuid')]",
       "scope": "[concat('Microsoft.ServiceBus/namespaces', '/', variables('serviceBusNamespaceName'))]",
       "dependsOn": [
         "[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusNamespaceName'))]",
@@ -1292,7 +1308,7 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2020-04-01-preview",
-      "name": "[parameters('StorageAccountDataFuncRoleNameGuid')]",
+      "name": "[parameters('StorageAccountApiSendFuncRoleNameGuid')]",
       "scope": "[concat('Microsoft.Storage/storageAccounts', '/', variables('storageAccountName'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
