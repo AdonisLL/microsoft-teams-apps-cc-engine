@@ -2,6 +2,8 @@
 @minLength(1)
 param baseResourceName string
 
+param keyVaultUriSuffix string= 'vault.azure.net'
+
 @description('The client ID of the user bot Azure AD app, e.g., 123e4567-e89b-12d3-a456-426655440000.')
 @minLength(36)
 @maxLength(36)
