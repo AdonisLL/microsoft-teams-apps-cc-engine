@@ -37,7 +37,7 @@ param graphAppSecret string
 param senderUPNList string
 
 @description('If proactive app installation should be enabled.')
-param ProactivelyInstallUserApp bool = true
+param ProactivelyInstallUserApp string = 'true'
 
 @description('User app external ID.')
 @minLength(1)
@@ -108,11 +108,11 @@ param hostingPlanSize string = '2'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('The URL to the GitHub repository to deploy.')
-param gitRepoUrl string = 'https://github.com/OfficeDev/microsoft-teams-company-communicator-app.git'
+// @description('The URL to the GitHub repository to deploy.')
+// param gitRepoUrl string = 'https://github.com/OfficeDev/microsoft-teams-company-communicator-app.git'
 
-@description('The branch of the GitHub repository to deploy.')
-param gitBranch string = 'main'
+// @description('The branch of the GitHub repository to deploy.')
+// param gitBranch string = 'main'
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)

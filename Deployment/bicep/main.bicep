@@ -12,7 +12,6 @@ module userAppModule 'aadresources.bicep' = {
   params:{
 
     location:location
-    resourceAppId:userResourceAppId
     name:'${baseResourceName}-users'
   }
 }
@@ -22,7 +21,6 @@ module authorAppModule 'aadresources.bicep' = {
   name:'authorApp'
   params:{
     location:location
-    resourceAppId:authorResourceAppId
     name:'${baseResourceName}-authors'
   }
 }
@@ -31,7 +29,6 @@ module graphAppModule 'aadresources.bicep' = {
   name:'graphAppModule'
   params:{
     location:location
-    resourceAppId:graphResourceAppId
     name:'${baseResourceName}-graph'
   }
 }
