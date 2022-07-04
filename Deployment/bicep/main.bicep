@@ -1,9 +1,6 @@
 param baseResourceName string
 param senderUPNList string
 param location string
-param authorResourceAppId string = newGuid()
-param userResourceAppId string = newGuid()
-param graphResourceAppId string = newGuid()
 
 
 
