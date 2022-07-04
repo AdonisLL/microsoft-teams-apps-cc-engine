@@ -1,22 +1,22 @@
 param name string
 param location string = resourceGroup().location
 param currentTime string = utcNow()
-param resourceAppId string
+
 
 
 resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: name
   location: location
   kind: 'AzurePowerShell'
-  // identity: {
-  //   type: 'UserAssigned'
-  //   userAssignedIdentities: {
-  //     '${resourceId('app-reg-automation', 'Microsoft.ManagedIdentity/userAssignedIdentities', 'AppRegCreator')}': {}
-  //   }
-  // }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${resourceId( '${resourceGroup().name}', 'Microsoft.ManagedIdentity/userAssignedIdentities', 'AppRegCreator')}': {}
+    }
+  }
   properties: {
     azPowerShellVersion: '5.0'
-    arguments: '-resourceName "${name}", -resourceAppId "${resourceAppId}"'
+    arguments: '-resourceName "${name}"'
     scriptContent: '''
       param([string] $resourceName)
       $token = (Get-AzAccessToken -ResourceUrl https://graph.microsoft.com).Token
@@ -26,7 +26,7 @@ resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
         displayName = $resourceName
         requiredResourceAccess = @(
           @{
-            resourceAppId = $resourceAppId
+            resourceAppId = "00000003-0000-0000-c000-000000000000"
             resourceAccess = @(
               @{
                 id = "e1fe6dd8-ba31-4d61-89e7-88639da4683d"
