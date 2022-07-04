@@ -142,5 +142,13 @@
   "termsOfUseUrl": {
     "Value": "<<value>>",
     "Description": "The https:// URL to the company's terms of use."
+  },
+  "storageAccountApiSendFuncRoleNameGuid": {
+    "Value": "3755a7b5-7df4-43f2-8800-5a1b4005be76",
+    "Description": "A GUID used to identify the role assignment. This is Default value."
+  },
+  "serviceBusApiSendFuncRoleNameGuid": {
+    "Value": "83d662f7-e73e-491a-b3d9-2c08631CBee9",
+    "Description": "A GUID used to identify the role assignment. This is Default value."
   }
 }

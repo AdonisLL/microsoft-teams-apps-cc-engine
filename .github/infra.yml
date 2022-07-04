@@ -1,0 +1,66 @@
+
+name: Deploy CC ENGINE Infrastructure
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+    paths:
+      - "Deployment/bicep/*"
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "Deployment/bicep/*"
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+   inputs:
+    base_resource_name: 
+     description: 'The base name to use for the resources that will be provisioned.'
+     required: true
+     default: 'CC-API'
+    sender_upn_list: 
+     description: 'emicolon-delimited list of the user principal names (UPNs) allowed to send messages.'
+     required: false
+     default: ''
+    location: 
+     description: 'Azure location to provision resources'
+     required: true
+     default: 'east us'
+
+
+env:
+  # The following variables are available to you in your workflow
+  # These are the same variables that are available in the GitHub UI
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Azure Login
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      # Deploy Bicep file
+      - name: 'deploy using env vars'
+        id: 'deployInfra'
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          resourceGroupName: ${{ secrets.AZURE_RG }}
+          template: ./Deployment/bicep/main.bicep
+          parameters: 
+            baseResourceName=${{ github.event.inputs.base_resource_name }}
+            senderUPNList=${{  github.event.inputs.sender_upn_list }}
+            location=${{  github.event.inputs.location }}
+          failOnStdErr: false

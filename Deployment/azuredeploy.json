@@ -344,6 +344,11 @@
         "name": "Basic",
         "tier": "Basic"
       },
+      "properties": {
+        "enablePartitioning": true,
+        "isAutoInflateEnabled": true,
+        "maximumThroughputUnits": "10"
+      },
       "resources": [
         {
           "type": "Queues",
@@ -464,7 +469,8 @@
       "properties": {
         "Application_Type": "web",
         "Request_Source": "rest"
-      }
+      },
+      "kind": "Component"
     },
     {
       "apiVersion": "2021-03-01",
@@ -722,6 +728,7 @@
         {
           "apiVersion": "2015-08-01",
           "name": "web",
+          "location": "[parameters('location')]",
           "type": "sourcecontrols",
           "condition": "[not(empty(parameters('gitRepoUrl')))]",
           "dependsOn": [
@@ -804,6 +811,7 @@
           "apiVersion": "2015-08-01",
           "name": "web",
           "type": "sourcecontrols",
+          "location": "[parameters('location')]",
           "condition": "[not(empty(parameters('gitRepoUrl')))]",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('sendFunctionAppName'))]",
@@ -888,6 +896,7 @@
           "apiVersion": "2015-08-01",
           "name": "web",
           "type": "sourcecontrols",
+          "location": "[parameters('location')]",
           "condition": "[not(empty(parameters('gitRepoUrl')))]",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('dataFunctionAppName'))]",
@@ -970,6 +979,7 @@
             "apiVersion": "2015-08-01",
             "name": "web",
             "type": "sourcecontrols",
+            "location": "[parameters('location')]",
             "condition": "[not(empty(parameters('gitRepoUrl')))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', variables('apiSendFunctionAppName'))]",
@@ -1427,11 +1437,11 @@
               ],
               "routeConfiguration": {
                 "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorRedirectConfiguration",
-                "customFragment": null,
+                "customFragment": "",
                 "customHost": "[variables('botAppDomain')]",
                 "customPath": "",
                 "redirectProtocol": "HttpsOnly",
-                "customQueryString": null,
+                "customQueryString": "",
                 "redirectType": "PermanentRedirect"
               },
               "enabledState": "Enabled"
