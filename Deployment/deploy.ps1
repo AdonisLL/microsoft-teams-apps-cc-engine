@@ -742,8 +742,6 @@ function ADAppUpdate {
 
     $applicationObjectId = $app.ObjectId
 
-    Connect-AzureAD
-
     $app = Get-AzureADMSApplication -ObjectId $applicationObjectId
 
     # Do nothing if the app has already been configured
@@ -953,7 +951,7 @@ function logout {
         $updatedecision = $host.ui.promptforchoice($confirmationtitle, $confirmationquestion, $confirmationchoices, 1)
         if ($updatedecision -eq 0) {
             WriteI -message "Installing Azure CLI ..."
-            Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+            Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; remove-item .\AzureCLI.msi
             WriteS -message "Azure CLI is installed! Please close this PowerShell window and re-run this script in a new PowerShell session."
             EXIT
         } else {
@@ -1046,7 +1044,7 @@ function logout {
     $context = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile.DefaultContext
     $aadToken = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate($context.Account, $context.Environment, $context.Tenant.Id.ToString(), $null, [Microsoft.Azure.Commands.Common.Authentication.ShowDialog]::Never, $null, "https://graph.windows.net").AccessToken
     $ADaccount = Connect-AzureAD -AadAccessToken $aadToken -AccountId $context.Account.Id -TenantId $context.tenant.id -ErrorAction Stop
-    $userAlias = (($user | ConvertFrom-Json) | where {$_.id -eq $parameters.subscriptionId.Value}).user.name
+    $userAlias = (($user | ConvertFrom-Json) | WHERE-OBJECT {$_.id -eq $parameters.subscriptionId.Value}).user.name
 
 
 # Validate the name of resources to be created.

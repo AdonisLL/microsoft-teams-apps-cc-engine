@@ -1,169 +1,129 @@
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
+using CsvHelper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Teams.Apps.CompanyCommunicator.Common.Repositories.NotificationData;
+using Microsoft.Teams.Apps.CompanyCommunicator.Common.Clients;
 using Microsoft.Teams.Apps.CompanyCommunicator.Common.Resources;
-using Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Models;
-using Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Services;
+using Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Mappers;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Globalization;
 using System.IO;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading;
+using System.IO.Compression;
 using System.Threading.Tasks;
-using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
+namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
 {
-    public class SendFunction
+    public class DataExportFunction
     {
-        private readonly INotificationService _notificationService;
-        private readonly IStringLocalizer<Strings> localizer;
-        private INotificationDataRepository _notificationDataRepository;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IStorageClientFactory _storageClientFactory;
+        private readonly IStringLocalizer<Strings> _localizer;
+        private readonly IDataStreamFacade _userDataStream;
+        private IConfiguration _configuration;
 
-        public SendFunction(
-            INotificationService notificationService,
-            INotificationDataRepository notificationDataRepository,
-            IHttpClientFactory httpClientFactory
-            )
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UploadActivity"/> class.
+        /// </summary>
+        /// <param name="storageClientFactory">the storage client factory.</param>
+        /// <param name="userDataStream">the user data stream.</param>
+        /// <param name="localizer">Localization service.</param>
+        public DataExportFunction(
+            IStorageClientFactory storageClientFactory,
+            IDataStreamFacade userDataStream,
+            IStringLocalizer<Strings> localizer,
+            IConfiguration configuration)
         {
-            _notificationService = notificationService;
-            _notificationDataRepository = notificationDataRepository;
-            _httpClientFactory = httpClientFactory;
+            _storageClientFactory = storageClientFactory ?? throw new ArgumentNullException(nameof(storageClientFactory));
+            _userDataStream = userDataStream ?? throw new ArgumentNullException(nameof(userDataStream));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        [FunctionName("SendApiWrapper_Orchestration")]
-        public static async Task<ActionResult> RunOrchestrator(
-            [OrchestrationTrigger] IDurableOrchestrationContext context)
+        [FunctionName("DataExportFunction")]
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            ILogger log)
         {
+            log.LogInformation("C# HTTP trigger function processed a request.");
+
             try
             {
-                DraftNotification notification = context.GetInput<DraftNotification>();
-                string notificationId = await context.CallActivityAsync<string>("SendApiWrapper_Work", notification);
-                string status = await context.CallActivityAsync<string>("SendApiWrapper_CheckStatus", notificationId);
-                int maxMinutes = 120;
+                string notificationId = req.Query["notificationId"];
+                string response = await this.GetNotificationReport(notificationId, log);
 
-                for (int i = 0; i < maxMinutes; i++)
+                return new OkObjectResult(response);
+            }
+            catch(Exception ex)
+            {
+                log.LogError(ex.Message);
+                return BadRequestObjectResult(ex);
+            }
+        }
+
+        private IActionResult BadRequestObjectResult(Exception ex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> GetNotificationReport(string notificationId, ILogger log)
+        {
+            //log.LogInformation($"Saying hello to {name}.");
+            //return $"Hello {name}!";
+
+            var fileName = GetFileName();
+
+            var blobContainerClient = _storageClientFactory.CreateBlobContainerClient();
+            await blobContainerClient.CreateIfNotExistsAsync();
+            await blobContainerClient.SetAccessPolicyAsync(PublicAccessType.None);
+            var blob = blobContainerClient.GetBlobClient(fileName);
+
+            using var memorystream = new MemoryStream();
+            using (var archive = new ZipArchive(memorystream, ZipArchiveMode.Create, true))
+            {
+                // message delivery csv creation.
+                var messageDeliveryFileName = string.Concat("FileName_Message_Delivery", ".csv");
+                var messageDeliveryFile = archive.CreateEntry(messageDeliveryFileName, CompressionLevel.Optimal);
+                using (var entryStream = messageDeliveryFile.Open())
                 {
-                    if (status == nameof(NotificationStatus.Sent))
+                    using (var writer = new StreamWriter(entryStream, System.Text.Encoding.UTF8))
+                    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                     {
-                        return new OkResult();
-                    }
-                    else
-                    {
-                        if (
-                            status != nameof(NotificationStatus.Canceled) &&
-                            status != nameof(NotificationStatus.Failed) &&
-                            status != nameof(NotificationStatus.Canceling)
-
-                            )
-
+                        var userDataMap = new UserDataMap(_localizer);
+                        csv.Configuration.RegisterClassMap(userDataMap);
+                        var userStream = _userDataStream.GetUserDataStreamAsync(notificationId, "Sent");
+                        await foreach (var data in userStream)
                         {
-                            DateTime dueTime = context.CurrentUtcDateTime.AddMinutes(1);
-                            await context.CreateTimer(dueTime, CancellationToken.None);
-                            status = await context.CallActivityAsync<string>("SendApiWrapper_CheckStatus", notificationId);
-                        }
-                        else
-                        {
-                            return new BadRequestObjectResult($"Notification status = {status}");
+                            await csv.WriteRecordsAsync(data);
                         }
                     }
                 }
-
-                return new NotFoundResult(); 
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(ex.Message);
-            }
-        }
-
-        [FunctionName("SendApiWrapper_Work")]
-        public async Task<string> Work_Function([ActivityTrigger] DraftNotification notification, ILogger log)
-        {
-            return await _notificationService.CreateSentNotification(notification, "Power Automate");
-        }
-
-        [FunctionName("SendApiWrapper_CheckStatus")]
-        public async Task<string> Status_Function([ActivityTrigger] string notificationId, ILogger log)
-        {
-            var notificationDataEntity = await _notificationDataRepository.GetAsync(
-                partitionKey: NotificationDataTableNames.SentNotificationsPartition,
-                rowKey: notificationId);
-            
-            if (notificationDataEntity == null)
-                throw new ArgumentNullException(nameof(notificationDataEntity));
-
-            return notificationDataEntity.Status;
-        }
-
-        [FunctionName("SendApiWrapperFunction_HttpStart")]
-        public async Task<ActionResult> HttpStart(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")]
-            HttpRequest req,
-        [DurableClient] IDurableOrchestrationClient starter,
-        ILogger log, ExecutionContext context)
-        {
-            // Function input comes from the request content.
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
-            var notificationData = JsonSerializer.Deserialize<DraftNotification>(requestBody, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-            var _groupId = req.Query["groupId"];
-            var _allUsers = req.Query["AllUsers"];
-
-            bool allUsers;
-            if (Boolean.TryParse(_allUsers, out allUsers))
-                allUsers = Convert.ToBoolean(_allUsers);
-
-            List<string> groupList = new List<string>();
-            if (!string.IsNullOrEmpty(_groupId) && !allUsers)
-            {
-                groupList.Add(_groupId);
             }
 
-            DraftNotification notification = new DraftNotification()
-            {
-                AdaptiveCardContent = requestBody,
-                Groups = groupList,
-                AllUsers = allUsers,
-                SendInstanceId = Guid.NewGuid().ToString()
-            };
-
-            if (notification == null)
-                throw new ArgumentNullException(nameof(notification));
-
-            if (!notification.Validate(localizer, out string errorMessage))
-                return new BadRequestObjectResult(errorMessage);
-
-            string instanceId = await starter.StartNewAsync("SendApiWrapper_Orchestration", notification);
-
-            log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
-
-            return (ActionResult)starter.CreateCheckStatusResponse(req, instanceId);
+            memorystream.Position = 0;
+            await blob.UploadAsync(memorystream, true);
+            int blobSasTimeout = 1;
+            int.TryParse(_configuration.GetValue<string>("BlobSasTimeoutHours"), out blobSasTimeout);
+            var url = blob.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(blobSasTimeout)).ToString();
+            return url;
         }
 
-        /// <summary>
-        /// Get the orchestration status of the notification.
-        /// </summary>
-        /// <param name="functionPayload">the payload of the orchestration containing Status Uri, Terminate Uri etc.</param>
-        /// <returns>the status of the orchestration.</returns>
-        public async Task<string> GetOrchestrationStatusAsync(string functionPayload)
+        private string GetFileName()
         {
-            var instancePayload = JsonConvert.DeserializeObject<HttpManagementPayload>(functionPayload);
-            var client = _httpClientFactory.CreateClient();
-            var response = await client.GetAsync(instancePayload.StatusQueryGetUri);
-            var content = await response.Content.ReadAsStringAsync();
-            var functionResp = JsonConvert.DeserializeObject<OrchestrationStatusResponse>(content);
-            return functionResp.RuntimeStatus;
+            var guid = Guid.NewGuid().ToString();
+            var fileName = "FileName_ExportData";
+            return $"{fileName}_{guid}.zip";
         }
+    }
+
+    public class NotificationInput
+    {
+        public string notificationId { get; set; }
     }
 }

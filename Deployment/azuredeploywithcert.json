@@ -344,16 +344,6 @@
         "name": "Basic",
         "tier": "Basic"
       },
-      "properties": {
-        "enablePartitioning": true,
-        "enableExpress": true,
-        "isAnonymousAccessible": true,
-        "maxSizeInMegabytes": 5120,
-        "sku": {
-          "name": "Basic",
-          "tier": "Basic"
-        }
-      },
       "resources": [
         {
           "type": "Queues",
@@ -474,8 +464,7 @@
       "properties": {
         "Application_Type": "web",
         "Request_Source": "rest"
-      },
-      "kind": "ApplicationInsights"
+      }
     },
     {
       "apiVersion": "2021-03-01",
@@ -734,7 +723,6 @@
           "apiVersion": "2015-08-01",
           "name": "web",
           "type": "sourcecontrols",
-          "location": "[parameters('location')]",
           "condition": "[not(empty(parameters('gitRepoUrl')))]",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('prepFunctionAppName'))]",
@@ -820,7 +808,6 @@
           "apiVersion": "2015-08-01",
           "name": "web",
           "type": "sourcecontrols",
-          "location": "[parameters('location')]",
           "condition": "[not(empty(parameters('gitRepoUrl')))]",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('sendFunctionAppName'))]",
@@ -907,7 +894,6 @@
           "apiVersion": "2015-08-01",
           "name": "web",
           "type": "sourcecontrols",
-          "location": "[parameters('location')]",
           "condition": "[not(empty(parameters('gitRepoUrl')))]",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('dataFunctionAppName'))]",
@@ -990,7 +976,6 @@
             "apiVersion": "2015-08-01",
             "name": "web",
             "type": "sourcecontrols",
-            "location": "[parameters('location')]",
             "condition": "[not(empty(parameters('gitRepoUrl')))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', variables('apiSendFunctionAppName'))]",
@@ -1280,21 +1265,6 @@
         "principalType": "ServicePrincipal"
       }
     },
-     {
-      "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2020-04-01-preview",
-      "name": "[parameters('StorageAccountApiSendFuncRoleNameGuid')]",
-      "scope": "[concat('Microsoft.Storage/storageAccounts', '/', variables('storageAccountName'))]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-        "[resourceId('Microsoft.Web/sites', variables('apiSendFunctionAppName'))]"
-      ],
-      "properties": {
-        "roleDefinitionId": "[variables('StorageBlobDataContributor')]",
-        "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('apiSendFunctionAppName')), '2019-08-01', 'Full').identity.principalId]",
-        "principalType": "ServicePrincipal"
-      }
-    },
     {
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/frontDoors",
@@ -1402,11 +1372,11 @@
               ],
               "routeConfiguration": {
                 "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorRedirectConfiguration",
-                "customFragment": "",
+                "customFragment": null,
                 "customHost": "[variables('botAppDomain')]",
                 "customPath": "",
                 "redirectProtocol": "HttpsOnly",
-                "customQueryString": "",
+                "customQueryString": null,
                 "redirectType": "PermanentRedirect"
               },
               "enabledState": "Enabled"

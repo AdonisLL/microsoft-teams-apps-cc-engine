@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Teams.Apps.CompanyCommunicator.Common.Clients;
@@ -24,6 +25,8 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
         private readonly IStorageClientFactory _storageClientFactory;
         private readonly IStringLocalizer<Strings> _localizer;
         private readonly IDataStreamFacade _userDataStream;
+        private IConfiguration _configuration;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UploadActivity"/> class.
@@ -34,16 +37,18 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
         public DataExportFunction(
             IStorageClientFactory storageClientFactory,
             IDataStreamFacade userDataStream,
-            IStringLocalizer<Strings> localizer)
+            IStringLocalizer<Strings> localizer,
+            IConfiguration configuration)
         {
             _storageClientFactory = storageClientFactory ?? throw new ArgumentNullException(nameof(storageClientFactory));
             _userDataStream = userDataStream ?? throw new ArgumentNullException(nameof(userDataStream));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         [FunctionName("DataExportFunction")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
@@ -103,7 +108,9 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
 
             memorystream.Position = 0;
             await blob.UploadAsync(memorystream, true);
-            var url = blob.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddDays(1)).ToString();
+            int blobSasTimeout = 1;
+            int.TryParse(_configuration.GetValue<string>("BlobSasTimeoutHours"), out blobSasTimeout);
+            var url = blob.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(blobSasTimeout)).ToString();
             return url;
         }
 

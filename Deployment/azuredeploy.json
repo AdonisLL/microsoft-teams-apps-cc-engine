@@ -1437,11 +1437,11 @@
               ],
               "routeConfiguration": {
                 "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorRedirectConfiguration",
-                "customFragment": "",
+                "customFragment": null,
                 "customHost": "[variables('botAppDomain')]",
                 "customPath": "",
                 "redirectProtocol": "HttpsOnly",
-                "customQueryString": "",
+                "customQueryString": null,
                 "redirectType": "PermanentRedirect"
               },
               "enabledState": "Enabled"
