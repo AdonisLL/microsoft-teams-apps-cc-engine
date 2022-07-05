@@ -27,7 +27,7 @@ on:
     location: 
      description: 'Azure location to provision resources'
      required: true
-     default: 'east us'
+     default: 'eastus'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
