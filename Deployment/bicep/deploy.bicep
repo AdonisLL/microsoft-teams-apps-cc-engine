@@ -158,7 +158,7 @@ var botAppDomain = '${botAppName_var}.azurewebsites.net'
 var botAppUrl = 'https://${botAppDomain}'
 param hostingPlanName_var string = '${baseResourceName}${newGuid()}'
 var storageAccountName_var = uniqueString('${resourceGroup().id}${baseResourceName}')
-var appInsightsName_var = baseResourceName
+param appInsightsName_var string  = uniqueString('${baseResourceName}-app-insights-${newGuid()}')
 var prepFunctionAppName_var = '${baseResourceName}-prep-function'
 var sendFunctionAppName_var = '${baseResourceName}-function'
 var dataFunctionAppName_var = '${baseResourceName}-data-function'
@@ -393,7 +393,7 @@ resource botName_MsTeamsChannel 'Microsoft.BotService/botServices/channels@2021-
   }
 }
 
-resource botAppName 'Microsoft.Web/sites@2022-03-01' = {
+resource botAppName 'Microsoft.Web/sites@2021-02-01' = {
   name: botAppName_var
   location: location
   kind: 'app'
