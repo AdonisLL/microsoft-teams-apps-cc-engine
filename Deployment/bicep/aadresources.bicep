@@ -68,7 +68,7 @@ resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
       $secret = (Invoke-RestMethod -Method POST -Headers $headers -Uri  "https://graph.microsoft.com/beta/applications/$($app.id)/addPassword" -Body ($body | ConvertTo-Json)).secretText
       
       $DeploymentScriptOutputs = @{}
-      $DeploymentScriptOutputs['objectId'] = $app.objectId
+      #$DeploymentScriptOutputs['objectId'] = $app.objectId
       $DeploymentScriptOutputs['clientId'] = $app.appId
       $DeploymentScriptOutputs['clientSecret'] = $secret
       #$DeploymentScriptOutputs['principalId'] = $principal.id
@@ -80,7 +80,7 @@ resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   }
 }
 
-output objectId string = script.properties.outputs.objectId
+//output objectId string = script.properties.outputs.objectId
 output clientId string = script.properties.outputs.clientId
 output clientSecret string = script.properties.outputs.clientSecret
 //output principalId string = script.properties.outputs.principalId
