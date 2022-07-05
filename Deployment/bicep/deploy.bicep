@@ -42,7 +42,7 @@ param ProactivelyInstallUserApp string = 'true'
 
 @description('User app external ID.')
 @minLength(1)
-param UserAppExternalId string = '148a66bb-e83d-425a-927d-09f4299a9274'
+param UserAppExternalId string = newGuid()
 
 @description('Default culture.')
 @minLength(1)
@@ -117,46 +117,46 @@ param location string = resourceGroup().location
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param serviceBusWebAppRoleNameGuid string = '958380b3-630d-4823-b933-f59d92cdcada'
+param serviceBusWebAppRoleNameGuid string = newGuid()
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param serviceBusPrepFuncRoleNameGuid string = 'ce6ca916-08e9-4639-bfbe-9d098baf42ca'
+param serviceBusPrepFuncRoleNameGuid string = newGuid()
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param serviceBusApiSendFuncRoleNameGuid string = '83d662f7-e73e-491a-b3d9-2c08631CBee9'
+param serviceBusApiSendFuncRoleNameGuid string = newGuid()
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param serviceBusSendFuncRoleNameGuid string = '960365a2-c7bf-4ff3-8887-efa86fe4a163'
+param serviceBusSendFuncRoleNameGuid string = newGuid()
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param serviceBusDataFuncRoleNameGuid string = 'd42703bc-421d-4d98-bc4d-cd2bb16e5b0a'
+param serviceBusDataFuncRoleNameGuid string = newGuid()
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param storageAccountWebAppRoleNameGuid string = 'edd0cc48-2cf7-490e-99e8-131311e42030'
+param storageAccountWebAppRoleNameGuid string = newGuid()
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param storageAccountPrepFuncRoleNameGuid string = '9332a9e9-93f4-48d9-8121-d279f30a732e'
+param storageAccountPrepFuncRoleNameGuid string = newGuid()
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param storageAccountApiSendFuncRoleNameGuid string = '3755a7b5-7df4-43f2-8800-5a1b4005be76'
+param storageAccountApiSendFuncRoleNameGuid string = newGuid()
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
-param storageAccountDataFuncRoleNameGuid string = '5b67af51-4a98-47e1-9d22-745069f51a13'
+param storageAccountDataFuncRoleNameGuid string = newGuid()
 
-var botName_var = baseResourceName
+var botName_var = '${baseResourceName}-bot'
 var authorBotName_var = '${baseResourceName}-author'
-var botAppName_var = baseResourceName
+param botAppName_var string = uniqueString('${baseResourceName}-bot-app-${newGuid()}')
 var botAppDomain = '${botAppName_var}.azurewebsites.net'
 var botAppUrl = 'https://${botAppDomain}'
-var hostingPlanName_var = baseResourceName
+param hostingPlanName_var string = '${baseResourceName}${newGuid()}'
 var storageAccountName_var = uniqueString('${resourceGroup().id}${baseResourceName}')
 var appInsightsName_var = baseResourceName
 var prepFunctionAppName_var = '${baseResourceName}-prep-function'
