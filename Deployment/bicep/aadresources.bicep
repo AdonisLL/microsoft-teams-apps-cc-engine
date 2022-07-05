@@ -38,7 +38,7 @@ resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
         signInAudience = "AzureADMyOrg"
       }
       
-      // Upsert App registration
+      #Upsert App registration
       $app = (Invoke-RestMethod -Method Get -Headers $headers -Uri "https://graph.microsoft.com/beta/applications?filter=displayName eq '$($resourceName)'").value
       $principal = @{}
       if ($app) {
@@ -49,7 +49,7 @@ resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
         $principal = Invoke-RestMethod -Method POST -Headers $headers -Uri  "https://graph.microsoft.com/beta/servicePrincipals" -Body (@{ "appId" = $app.appId } | ConvertTo-Json)
       }
       
-      // Creating client secret
+      #Creating client secret
       $app = (Invoke-RestMethod -Method Get -Headers $headers -Uri "https://graph.microsoft.com/beta/applications/$($app.id)")
       
       foreach ($password in $app.passwordCredentials) {
@@ -68,19 +68,19 @@ resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
       $secret = (Invoke-RestMethod -Method POST -Headers $headers -Uri  "https://graph.microsoft.com/beta/applications/$($app.id)/addPassword" -Body ($body | ConvertTo-Json)).secretText
       
       $DeploymentScriptOutputs = @{}
-      $DeploymentScriptOutputs['objectId'] = $app.id
+      #$DeploymentScriptOutputs['objectId'] = $app.objectId
       $DeploymentScriptOutputs['clientId'] = $app.appId
       $DeploymentScriptOutputs['clientSecret'] = $secret
-      $DeploymentScriptOutputs['principalId'] = $principal.id
+      #$DeploymentScriptOutputs['principalId'] = $principal.id
 
     '''
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'
-    forceUpdateTag: currentTime // ensures script will run every time
+    forceUpdateTag: currentTime  //ensures script will run every time
   }
 }
 
-output objectId string = script.properties.outputs.objectIds
+//output objectId string = script.properties.outputs.objectId
 output clientId string = script.properties.outputs.clientId
 output clientSecret string = script.properties.outputs.clientSecret
 output principalId string = script.properties.outputs.principalId
