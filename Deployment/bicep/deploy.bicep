@@ -300,7 +300,7 @@ resource serviceBusNamespaceName_serviceBusExportQueueName 'Microsoft.ServiceBus
   }
 }
 
-resource hostingPlanName 'Microsoft.Web/serverfarms@2022-03-01' = {
+resource hostingPlanName 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: hostingPlanName_var
   location: location
   properties: {
@@ -432,7 +432,7 @@ resource botAppName 'Microsoft.Web/sites@2021-02-01' = {
   ]
 }
 
-resource botAppName_appsettings 'Microsoft.Web/sites/config@2022-03-01' = {
+resource botAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: botAppName
   name: 'appsettings'
   properties: {
@@ -489,7 +489,7 @@ resource botAppName_web 'Microsoft.Web/sites/sourcecontrols@2016-08-01' = { //= 
   ]
 }
 
-resource prepFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
+resource prepFunctionAppName 'Microsoft.Web/sites@2021-03-01' = {
   name: prepFunctionAppName_var
   location: location
   kind: 'functionapp'
@@ -511,7 +511,7 @@ resource prepFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
   ]
 }
 
-resource prepFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-01' = {
+resource prepFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: prepFunctionAppName
   name: 'appsettings'
   properties: {
@@ -555,7 +555,7 @@ resource prepFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-01'
   ]
 }
 
-resource prepFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {//} if (!empty(gitRepoUrl)) {
+resource prepFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = {//} if (!empty(gitRepoUrl)) {
   parent: prepFunctionAppName
   name: 'web'
   properties: {
@@ -568,7 +568,7 @@ resource prepFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01'
   ]
 }
 
-resource sendFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
+resource sendFunctionAppName 'Microsoft.Web/sites@2021-03-01' = {
   name: sendFunctionAppName_var
   location: location
   kind: 'functionapp'
@@ -590,7 +590,7 @@ resource sendFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
   ]
 }
 
-resource sendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-01' = {
+resource sendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: sendFunctionAppName
   name: 'appsettings'
   properties: {
@@ -627,7 +627,7 @@ resource sendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-01'
   ]
 }
 
-resource sendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = { //if (!empty(gitRepoUrl)) {
+resource sendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
   parent: sendFunctionAppName
   name: 'web'
   properties: {
@@ -662,7 +662,7 @@ resource dataFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
   ]
 }
 
-resource dataFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-01' = {
+resource dataFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: dataFunctionAppName
   name: 'appsettings'
   properties: {
@@ -702,7 +702,7 @@ resource dataFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-01'
   ]
 }
 
-resource dataFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = { //if (!empty(gitRepoUrl)) {
+resource dataFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
   parent: dataFunctionAppName
   name: 'web'
   properties: {
@@ -737,7 +737,7 @@ resource apiSendFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
   ]
 }
 
-resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-01' = {
+resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: apiSendFunctionAppName
   name: 'appsettings'
   properties: {
@@ -747,23 +747,23 @@ resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-
     'i18n:SupportedCultures': i18n_SupportedCultures
     ProactivelyInstallUserApp: ProactivelyInstallUserApp_var
     UserAppId: userClientId
-    UserAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(UserAppSecretResourceId, '2022-03-01').secretUriWithVersion})'
+    UserAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(UserAppSecretResourceId, '2021-03-01').secretUriWithVersion})'
     AuthorAppId: authorClientId
-    AuthorAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(AuthorAppSecretResourceId, '2022-03-01').secretUriWithVersion})'
-    StorageAccountConnectionString: '@Microsoft.KeyVault(SecretUri=${reference(StorageAccountSecretResourceId, '2022-03-01').secretUriWithVersion})'
-    ServiceBusConnection: '@Microsoft.KeyVault(SecretUri=${reference(ServiceBusSecretResourceId, '2022-03-01').secretUriWithVersion})'
+    AuthorAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(AuthorAppSecretResourceId, '2021-03-01').secretUriWithVersion})'
+    StorageAccountConnectionString: '@Microsoft.KeyVault(SecretUri=${reference(StorageAccountSecretResourceId, '2021-03-01').secretUriWithVersion})'
+    ServiceBusConnection: '@Microsoft.KeyVault(SecretUri=${reference(ServiceBusSecretResourceId, '2021-03-01').secretUriWithVersion})'
     ServiceBusNamespace: '${serviceBusNamespaceName_var}.servicebus.windows.net'
     StorageAccountName: storageAccountName_var
     UseManagedIdentity: 'true'
     UseCertificate: 'false'
     WEBSITE_LOAD_CERTIFICATES: '*'
-    APPINSIGHTS_INSTRUMENTATIONKEY: '@Microsoft.KeyVault(SecretUri=${reference(AppInsightsSecretResourceId, '2022-03-01').secretUriWithVersion})'
+    APPINSIGHTS_INSTRUMENTATIONKEY: '@Microsoft.KeyVault(SecretUri=${reference(AppInsightsSecretResourceId, '2021-03-01').secretUriWithVersion})'
     'KeyVault:Url': keyVaultUrl
-    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2022-03-01').key1}'
-    AzureWebJobsDashboard: '@Microsoft.KeyVault(SecretUri=${reference(StorageAccountSecretResourceId, '2022-03-01').secretUriWithVersion})'
+    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2021-03-01').key1}'
+    AzureWebJobsDashboard: '@Microsoft.KeyVault(SecretUri=${reference(StorageAccountSecretResourceId, '2021-03-01').secretUriWithVersion})'
     FUNCTIONS_EXTENSION_VERSION: '~3'
     FUNCTIONS_WORKER_RUNTIME: 'dotnet'
-    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2022-03-01').key1}'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2021-03-01').key1}'
     WEBSITE_CONTENTSHARE: toLower(apiSendFunctionAppName_var)
     CleanUpScheduleTriggerTime: '30 23 * * *'
     CleanUpFile: '1'
@@ -777,7 +777,7 @@ resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2022-03-
   ]
 }
 
-resource apiSendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = { //if (!empty(gitRepoUrl)) {
+resource apiSendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
   parent: apiSendFunctionAppName
   name: 'web'
   properties: {
