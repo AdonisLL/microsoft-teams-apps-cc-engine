@@ -50,7 +50,7 @@ class Overflow extends React.Component<OverflowProps, OverflowState> {
 
     public render(): JSX.Element {
         let shouldNotShowCancel;
-        if (this.props.message != undefined && this.props.message.status != undefined) {
+        if (this.props.message !== undefined && this.props.message.status !== undefined) {
             const status = this.props.message.status.toUpperCase();
             shouldNotShowCancel = status === "SENT" || status === "UNKNOWN" || status === "FAILED" || status === "CANCELED" || status === "CANCELING";
         }
