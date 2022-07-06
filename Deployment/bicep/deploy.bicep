@@ -815,7 +815,7 @@ resource keyvaultName 'Microsoft.KeyVault/vaults@2021-10-01' = {
           ]
           certificates: []
         }
-        applicationId:botAppName.id
+        // applicationId:botAppName.id
       }
       {
         tenantId: reference('Microsoft.Web/sites/${prepFunctionAppName_var}', '2018-02-01', 'Full').identity.tenantId
@@ -829,7 +829,7 @@ resource keyvaultName 'Microsoft.KeyVault/vaults@2021-10-01' = {
             'get'
           ]
         }
-        applicationId:prepFunctionAppName.id
+        // applicationId:prepFunctionAppName.id
       }
       {
         tenantId: reference('Microsoft.Web/sites/${sendFunctionAppName_var}', '2018-02-01', 'Full').identity.tenantId
@@ -843,7 +843,7 @@ resource keyvaultName 'Microsoft.KeyVault/vaults@2021-10-01' = {
             'get'
           ]
         }
-        applicationId:sendFunctionAppName.id
+         // applicationId:sendFunctionAppName.id
       }
       {
         tenantId: reference('Microsoft.Web/sites/${dataFunctionAppName_var}', '2018-02-01', 'Full').identity.tenantId
@@ -857,7 +857,7 @@ resource keyvaultName 'Microsoft.KeyVault/vaults@2021-10-01' = {
             'get'
           ]
         }
-        applicationId:dataFunctionAppName.id
+        // applicationId:dataFunctionAppName.id
       }
       {
         tenantId: reference('Microsoft.Web/sites/${apiSendFunctionAppName_var}', '2018-02-01', 'Full').identity.tenantId
@@ -871,7 +871,7 @@ resource keyvaultName 'Microsoft.KeyVault/vaults@2021-10-01' = {
             'get'
           ]
         }
-        applicationId:apiSendFunctionAppName.id
+        // applicationId:apiSendFunctionAppName.id
       }
     ]
     sku: {
