@@ -31,21 +31,21 @@ jobs:
     steps:
 
       # Checkout the repo
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
       
       # Setup .NET Core SDK
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }} 
       
       # Run dotnet build and publish
       - name: dotnet build and publish
         run: |
-          dotnet restore
-          dotnet build --configuration Release
-          dotnet publish -c Release -o './ccapp'
-        working-directory: "./source/companycommunicator/"
+          dotnet restore "./source/companycommunicator/"
+          dotnet build "./source/companycommunicator/" --configuration Release
+          dotnet publish "./source/companycommunicator/" -c Release -o './ccapp'
+      #working-directory: "./source/companycommunicator/"
 
       # Azure Login
       - uses: azure/login@v1
