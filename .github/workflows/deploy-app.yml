@@ -42,10 +42,10 @@ jobs:
       # Run dotnet build and publish
       - name: dotnet build and publish
         run: |
-          dotnet restore "./source/companycommunicator/"
-          dotnet build "./source/companycommunicator/" --configuration Release
-          dotnet publish "./source/companycommunicator/" -c Release -o './ccapp'
-      #working-directory: "./source/companycommunicator/"
+          dotnet restore
+          dotnet build --configuration Release
+          dotnet publish -c Release -o './ccapp'
+        working-directory: "./source/companycommunicator"
 
       # Azure Login
       - uses: azure/login@v1
