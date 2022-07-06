@@ -86,6 +86,17 @@ jobs:
           dotnet publish "./Source/CompanyCommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" -c Release -o './ccapp'
         #working-directory: "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj"
 
+          # Run dotnet restore
+      - name: dotnet restore test 3
+        run: |
+          ls
+
+        # Run dotnet restore
+      - name: dotnet restore test 4
+        run: |
+          cd Source/CompanyCommunicator
+          ls
+
       # Azure Login
       - uses: azure/login@v1
         with:
