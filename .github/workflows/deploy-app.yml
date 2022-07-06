@@ -83,19 +83,14 @@ jobs:
       # Run dotnet publish
       - name: dotnet publish
         run: |
-          dotnet publish "./Source/CompanyCommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" -c Release -o './ccapp'
+          dotnet publish "./Source/CompanyCommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" -c Release -o ${{env.DOTNET_ROOT}}/ccapp
         #working-directory: "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj"
 
-          # Run dotnet restore
-      - name: dotnet restore test 3
-        run: |
-          ls
-
-        # Run dotnet restore
-      - name: dotnet restore test 4
-        run: |
-          cd Source/CompanyCommunicator
-          ls
+      # - name: Upload artifact for deployment job
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: .net-app
+      #     path: ${{env.DOTNET_ROOT}}/ccapp
 
       # Azure Login
       - uses: azure/login@v1
@@ -118,12 +113,17 @@ jobs:
       #     inlineScript: |
       #       echo "APIM_NAME="$(awk -F'.' '{gsub("\"", "", $1); print $1}' <<< $(az apim list -g ${{ secrets.AZURE_RG }} --query [0].name)) >> $GITHUB_ENV
       
-      # Deploy to Azure Web apps
+      # # Deploy to Azure Web apps
+      # - name: Download artifact from build job
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: .net-app
+
       - name: 'Run Azure webapp deploy action using publish profile credentials'
         uses: azure/webapps-deploy@v2
         with: 
           app-name: ${{ env.WEBSITE_NAME }} # Replace with your app name
-          package: './Source/CompanyCommunicator/ccapp'
+          package: './ccapp'
 
 
       # # Deploy Bicep file
