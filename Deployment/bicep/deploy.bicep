@@ -151,19 +151,20 @@ param storageAccountApiSendFuncRoleNameGuid string = newGuid()
 @minLength(1)
 param storageAccountDataFuncRoleNameGuid string = newGuid()
 
-var botName_var = '${baseResourceName}-bot'
-var authorBotName_var = '${baseResourceName}-author'
-param botAppName_var string = uniqueString('${baseResourceName}-bot-app-${newGuid()}')
+var botAppName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-bot-app'
+var hostingPlanName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-hosting'
+var appInsightsName_var  = '${baseResourceName}${uniqueString(resourceGroup().id)}-app-insights'
+var botName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-bot'
+var authorBotName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-author'
 var botAppDomain = '${botAppName_var}.azurewebsites.net'
 var botAppUrl = 'https://${botAppDomain}'
-param hostingPlanName_var string = '${baseResourceName}${newGuid()}'
-var storageAccountName_var = uniqueString('${resourceGroup().id}${baseResourceName}')
-param appInsightsName_var string  = uniqueString('${baseResourceName}-app-insights-${newGuid()}')
-var prepFunctionAppName_var = '${baseResourceName}-prep-function'
-var sendFunctionAppName_var = '${baseResourceName}-function'
-var dataFunctionAppName_var = '${baseResourceName}-data-function'
-var apiSendFunctionAppName_var = '${baseResourceName}-apisend-function'
-var serviceBusNamespaceName_var = baseResourceName
+var storageAccountName_var_value = replace('${baseResourceName}${uniqueString(resourceGroup().id)}stg','-','')
+var storageAccountName_var = length(storageAccountName_var_value) > 24 ? substring(replace(storageAccountName_var_value,'-',''),0,24) : storageAccountName_var_value
+var prepFunctionAppName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-prep-function'
+var sendFunctionAppName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-function'
+var dataFunctionAppName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-data-function'
+var apiSendFunctionAppName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-apisend-function'
+var serviceBusNamespaceName_var = '${baseResourceName}${uniqueString(resourceGroup().id)}-sbns'
 var serviceBusSendQueueName = 'company-communicator-send'
 var serviceBusDataQueueName = 'company-communicator-data'
 var serviceBusPrepareToSendQueueName = 'company-communicator-prep'
@@ -185,7 +186,7 @@ var i18n_DefaultCulture = DefaultCulture
 var i18n_SupportedCultures = SupportedCultures
 var AzureserviceBusDataOwner = '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/090c5cfd-751d-490a-894a-3ce6f1109419'
 var StorageBlobDataContributor = '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/ba92f5b4-2d11-453d-a403-e96b0029c9fe'
-var keyvaultName_var = '${botAppName_var}vault'
+var keyvaultName_var = length('kv-${botAppName_var}') > 24 ? substring('kv-${botAppName_var}',0,24) : 'kv-${botAppName_var}'
 var keyVaultUrl = 'https://${keyvaultName_var}.vault.azure.net'
 var subscriptionTenantId = subscription().tenantId
 var StorageAccountSecretName = '${keyvaultName_var}StorageAccountConnectionString'
@@ -476,18 +477,18 @@ resource botAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   ]
 }
 
-resource botAppName_web 'Microsoft.Web/sites/sourcecontrols@2016-08-01' = { //= if (!empty(gitRepoUrl)) {
-  parent: botAppName
-  name: 'web'
-  properties: {
-    // repoUrl: gitRepoUrl
-    // branch: gitBranch
-    // isManualIntegration: true
-  }
-  dependsOn: [
-    botAppName_appsettings
-  ]
-}
+// resource botAppName_web 'Microsoft.Web/sites/sourcecontrols@2016-08-01' = { //= if (!empty(gitRepoUrl)) {
+//   parent: botAppName
+//   name: 'web'
+//   properties: {
+//     // repoUrl: gitRepoUrl
+//     // branch: gitBranch
+//     // isManualIntegration: true
+//   }
+//   dependsOn: [
+//     botAppName_appsettings
+//   ]
+// }
 
 resource prepFunctionAppName 'Microsoft.Web/sites@2021-03-01' = {
   name: prepFunctionAppName_var
@@ -555,18 +556,18 @@ resource prepFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01'
   ]
 }
 
-resource prepFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = {//} if (!empty(gitRepoUrl)) {
-  parent: prepFunctionAppName
-  name: 'web'
-  properties: {
-    // repoUrl: gitRepoUrl
-    // branch: gitBranch
-    // isManualIntegration: true
-  }
-  dependsOn: [
-    prepFunctionAppName_appsettings
-  ]
-}
+// resource prepFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = {//} if (!empty(gitRepoUrl)) {
+//   parent: prepFunctionAppName
+//   name: 'web'
+//   properties: {
+//     // repoUrl: gitRepoUrl
+//     // branch: gitBranch
+//     // isManualIntegration: true
+//   }
+//   dependsOn: [
+//     prepFunctionAppName_appsettings
+//   ]
+// }
 
 resource sendFunctionAppName 'Microsoft.Web/sites@2021-03-01' = {
   name: sendFunctionAppName_var
@@ -627,18 +628,18 @@ resource sendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01'
   ]
 }
 
-resource sendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
-  parent: sendFunctionAppName
-  name: 'web'
-  properties: {
-    // repoUrl: gitRepoUrl
-    // branch: gitBranch
-    // isManualIntegration: true
-  }
-  dependsOn: [
-    sendFunctionAppName_appsettings
-  ]
-}
+// resource sendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
+//   parent: sendFunctionAppName
+//   name: 'web'
+//   properties: {
+//     // repoUrl: gitRepoUrl
+//     // branch: gitBranch
+//     // isManualIntegration: true
+//   }
+//   dependsOn: [
+//     sendFunctionAppName_appsettings
+//   ]
+// }
 
 resource dataFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
   name: dataFunctionAppName_var
@@ -702,18 +703,18 @@ resource dataFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01'
   ]
 }
 
-resource dataFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
-  parent: dataFunctionAppName
-  name: 'web'
-  properties: {
-    // repoUrl: gitRepoUrl
-    // branch: gitBranch
-    // isManualIntegration: true
-  }
-  dependsOn: [
-    dataFunctionAppName_appsettings
-  ]
-}
+// resource dataFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
+//   parent: dataFunctionAppName
+//   name: 'web'
+//   properties: {
+//     // repoUrl: gitRepoUrl
+//     // branch: gitBranch
+//     // isManualIntegration: true
+//   }
+//   dependsOn: [
+//     dataFunctionAppName_appsettings
+//   ]
+// }
 
 resource apiSendFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
   name: apiSendFunctionAppName_var
@@ -747,23 +748,23 @@ resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-
     'i18n:SupportedCultures': i18n_SupportedCultures
     ProactivelyInstallUserApp: ProactivelyInstallUserApp_var
     UserAppId: userClientId
-    UserAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(UserAppSecretResourceId, '2021-03-01').secretUriWithVersion})'
+    UserAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(UserAppSecretResourceId, '2022-07-01').secretUriWithVersion})'
     AuthorAppId: authorClientId
-    AuthorAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(AuthorAppSecretResourceId, '2021-03-01').secretUriWithVersion})'
-    StorageAccountConnectionString: '@Microsoft.KeyVault(SecretUri=${reference(StorageAccountSecretResourceId, '2021-03-01').secretUriWithVersion})'
-    ServiceBusConnection: '@Microsoft.KeyVault(SecretUri=${reference(ServiceBusSecretResourceId, '2021-03-01').secretUriWithVersion})'
+    AuthorAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(AuthorAppSecretResourceId, '2022-07-01').secretUriWithVersion})'
+    StorageAccountConnectionString: '@Microsoft.KeyVault(SecretUri=${reference(StorageAccountSecretResourceId, '2022-07-01').secretUriWithVersion})'
+    ServiceBusConnection: '@Microsoft.KeyVault(SecretUri=${reference(ServiceBusSecretResourceId, '2022-07-01').secretUriWithVersion})'
     ServiceBusNamespace: '${serviceBusNamespaceName_var}.servicebus.windows.net'
     StorageAccountName: storageAccountName_var
     UseManagedIdentity: 'true'
     UseCertificate: 'false'
     WEBSITE_LOAD_CERTIFICATES: '*'
-    APPINSIGHTS_INSTRUMENTATIONKEY: '@Microsoft.KeyVault(SecretUri=${reference(AppInsightsSecretResourceId, '2021-03-01').secretUriWithVersion})'
+    APPINSIGHTS_INSTRUMENTATIONKEY: '@Microsoft.KeyVault(SecretUri=${reference(AppInsightsSecretResourceId, '2022-07-01').secretUriWithVersion})'
     'KeyVault:Url': keyVaultUrl
-    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2021-03-01').key1}'
-    AzureWebJobsDashboard: '@Microsoft.KeyVault(SecretUri=${reference(StorageAccountSecretResourceId, '2021-03-01').secretUriWithVersion})'
+    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2015-05-01-preview').key1}'
+    AzureWebJobsDashboard: '@Microsoft.KeyVault(SecretUri=${reference(StorageAccountSecretResourceId, '2022-07-01').secretUriWithVersion})'
     FUNCTIONS_EXTENSION_VERSION: '~3'
     FUNCTIONS_WORKER_RUNTIME: 'dotnet'
-    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2021-03-01').key1}'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2015-05-01-preview').key1}'
     WEBSITE_CONTENTSHARE: toLower(apiSendFunctionAppName_var)
     CleanUpScheduleTriggerTime: '30 23 * * *'
     CleanUpFile: '1'
@@ -777,18 +778,19 @@ resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-
   ]
 }
 
-resource apiSendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
-  parent: apiSendFunctionAppName
-  name: 'web'
-  properties: {
-    // repoUrl: gitRepoUrl
-    // branch: gitBranch
-    // isManualIntegration: true
-  }
-  dependsOn: [
-    apiSendFunctionAppName_appsettings
-  ]
-}
+
+// resource apiSendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
+//   parent: apiSendFunctionAppName
+//   name: 'web'
+//   properties: {
+//     // repoUrl: gitRepoUrl
+//     // branch: gitBranch
+//     // isManualIntegration: true
+//   }
+//   dependsOn: [
+//     apiSendFunctionAppName_appsettings
+//   ]
+// }
 
 resource keyvaultName 'Microsoft.KeyVault/vaults@2021-10-01' = {
   name: keyvaultName_var
