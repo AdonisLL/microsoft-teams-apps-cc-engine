@@ -42,10 +42,10 @@ jobs:
       # Run dotnet build and publish
       - name: dotnet build and publish
         run: |
-          dotnet restore
-          dotnet build --configuration Release
-          dotnet publish -c Release -o './ccapp'
-        working-directory: "./source/companycommunicator1"
+          dotnet restore "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj"
+          dotnet build "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" --configuration Release
+          dotnet publish "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" -c Release -o './ccapp'
+        #working-directory: "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj"
 
       # Azure Login
       - uses: azure/login@v1
