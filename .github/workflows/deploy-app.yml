@@ -43,6 +43,9 @@ jobs:
       - name: dotnet restore test
         run: |
           ls
+          cd Source
+          cd CompanyCommunicator
+          ls
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
