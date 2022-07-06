@@ -39,11 +39,20 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }} 
       
-      # Run dotnet build and publish
-      - name: dotnet build and publish
+      
+      # Run dotnet restore
+      - name: dotnet restore
         run: |
           dotnet restore "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj"
+
+      # Run dotnet build 
+      - name: dotnet build 
+        run: |
           dotnet build "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" --configuration Release
+
+      # Run dotnet publish
+      - name: dotnet publish
+        run: |
           dotnet publish "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" -c Release -o './ccapp'
         #working-directory: "./source/companycommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj"
 
