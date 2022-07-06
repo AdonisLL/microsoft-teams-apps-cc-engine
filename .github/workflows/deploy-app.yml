@@ -42,7 +42,6 @@ jobs:
        # Run dotnet restore
       - name: dotnet restore test
         run: |
-          cd  './source/companycommunicator'
           ls
 
       # Run dotnet restore
