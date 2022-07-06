@@ -105,7 +105,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with: 
           app-name: ${{ env.WEBSITE_NAME }} # Replace with your app name
-          package: './source/companycommunicator/ccapp'
+          package: './Source/CompanyCommunicator/ccapp'
 
 
       # # Deploy Bicep file
