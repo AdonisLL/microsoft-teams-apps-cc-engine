@@ -39,12 +39,16 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }} 
       
-       # Run dotnet restore
-      - name: dotnet restore test
+
+         # Run dotnet restore
+      - name: dotnet restore test 1
         run: |
           ls
-          cd Source
-          cd CompanyCommunicator
+
+       # Run dotnet restore
+      - name: dotnet restore test 2
+        run: |
+          cd Source/CompanyCommunicator
           ls
 
       - name: Setup Node.js
