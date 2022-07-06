@@ -45,7 +45,7 @@ jobs:
           dotnet restore
           dotnet build --configuration Release
           dotnet publish -c Release -o './ccapp'
-        working-directory: "source/companycommunicator/"
+        working-directory: "/source/companycommunicator/"
 
       # Azure Login
       - uses: azure/login@v1
