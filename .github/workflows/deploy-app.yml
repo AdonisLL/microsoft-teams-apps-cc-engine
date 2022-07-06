@@ -21,7 +21,7 @@ on:
 #
 # 2. Change these variables for your configuration:
 env:
-  DOTNET_VERSION: '6.0.x'           # set this to the dot net version to use
+  DOTNET_VERSION: '3.1.x'           # set this to the dot net version to use
   WEBSITE_NAME: ''                  # this is going to be filed by querying the web apps in the resource group
 
 jobs:
