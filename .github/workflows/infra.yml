@@ -44,6 +44,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Azure Login
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: 'Set Function App Permissions'
         uses: azure/powershell@v1
         with:
@@ -59,13 +67,7 @@ jobs:
       #     inlineScript: |
       #       echo "APP_REGID="$(awk -F'.' '{gsub("\"", "", $1); print $1}' <<< $(az identity create -g ${{ secrets.AZURE_RG }} -n AppRegCreator --out tsv --query principalId)) >> $GITHUB_ENV
 
-      # # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      # - uses: actions/checkout@v3
-
-      # # Azure Login
-      # - uses: azure/login@v1
-      #   with:
-      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+     
 
 
       #  # Deploy Bicep file
