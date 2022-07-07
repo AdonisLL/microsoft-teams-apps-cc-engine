@@ -44,8 +44,6 @@ jobs:
  deploy:
       runs-on: ubuntu-latest
       needs: [build-function]
-      env:
-        FUNC_APP_NAME: ${{ env.AZURE_FUNCTIONAPP_NAME }}
       steps:
         - name: Download Artifact
           uses: actions/download-artifact@v1
