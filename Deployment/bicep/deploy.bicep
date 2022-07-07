@@ -109,11 +109,11 @@ param hostingPlanSize string = '2'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-// @description('The URL to the GitHub repository to deploy.')
-// param gitRepoUrl string = 'https://github.com/OfficeDev/microsoft-teams-company-communicator-app.git'
+@description('The URL to the GitHub repository to deploy.')
+param gitRepoUrl string = 'https://github.com/AdonisLL/microsoft-teams-apps-cc-engine.git'
 
-// @description('The branch of the GitHub repository to deploy.')
-// param gitBranch string = 'main'
+@description('The branch of the GitHub repository to deploy.')
+param gitBranch string = 'main'
 
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
@@ -477,13 +477,13 @@ resource botAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   ]
 }
 
-// resource botAppName_web 'Microsoft.Web/sites/sourcecontrols@2016-08-01' = { //= if (!empty(gitRepoUrl)) {
+// resource botAppName_web 'Microsoft.Web/sites/sourcecontrols@2016-08-01' = if (!empty(gitRepoUrl)) {
 //   parent: botAppName
 //   name: 'web'
 //   properties: {
-//     // repoUrl: gitRepoUrl
-//     // branch: gitBranch
-//     // isManualIntegration: true
+//     repoUrl: gitRepoUrl
+//     branch: gitBranch
+//     isManualIntegration: true
 //   }
 //   dependsOn: [
 //     botAppName_appsettings
@@ -556,18 +556,18 @@ resource prepFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01'
   ]
 }
 
-// resource prepFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = {//} if (!empty(gitRepoUrl)) {
-//   parent: prepFunctionAppName
-//   name: 'web'
-//   properties: {
-//     // repoUrl: gitRepoUrl
-//     // branch: gitBranch
-//     // isManualIntegration: true
-//   }
-//   dependsOn: [
-//     prepFunctionAppName_appsettings
-//   ]
-// }
+resource prepFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = if (!empty(gitRepoUrl)) {
+  parent: prepFunctionAppName
+  name: 'web'
+  properties: {
+    repoUrl: gitRepoUrl
+    branch: gitBranch
+    isManualIntegration: true
+  }
+  dependsOn: [
+    prepFunctionAppName_appsettings
+  ]
+}
 
 resource sendFunctionAppName 'Microsoft.Web/sites@2021-03-01' = {
   name: sendFunctionAppName_var
@@ -628,18 +628,18 @@ resource sendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01'
   ]
 }
 
-// resource sendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
-//   parent: sendFunctionAppName
-//   name: 'web'
-//   properties: {
-//     // repoUrl: gitRepoUrl
-//     // branch: gitBranch
-//     // isManualIntegration: true
-//   }
-//   dependsOn: [
-//     sendFunctionAppName_appsettings
-//   ]
-// }
+resource sendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = if (!empty(gitRepoUrl)) {
+  parent: sendFunctionAppName
+  name: 'web'
+  properties: {
+    repoUrl: gitRepoUrl
+    branch: gitBranch
+    isManualIntegration: true
+  }
+  dependsOn: [
+    sendFunctionAppName_appsettings
+  ]
+}
 
 resource dataFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
   name: dataFunctionAppName_var
@@ -703,18 +703,18 @@ resource dataFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01'
   ]
 }
 
-// resource dataFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
-//   parent: dataFunctionAppName
-//   name: 'web'
-//   properties: {
-//     // repoUrl: gitRepoUrl
-//     // branch: gitBranch
-//     // isManualIntegration: true
-//   }
-//   dependsOn: [
-//     dataFunctionAppName_appsettings
-//   ]
-// }
+resource dataFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01'  = if (!empty(gitRepoUrl)) {
+  parent: dataFunctionAppName
+  name: 'web'
+  properties: {
+    repoUrl: gitRepoUrl
+    branch: gitBranch
+    isManualIntegration: true
+  }
+  dependsOn: [
+    dataFunctionAppName_appsettings
+  ]
+}
 
 resource apiSendFunctionAppName 'Microsoft.Web/sites@2022-03-01' = {
   name: apiSendFunctionAppName_var
@@ -779,18 +779,18 @@ resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-
 }
 
 
-// resource apiSendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = { //if (!empty(gitRepoUrl)) {
-//   parent: apiSendFunctionAppName
-//   name: 'web'
-//   properties: {
-//     // repoUrl: gitRepoUrl
-//     // branch: gitBranch
-//     // isManualIntegration: true
-//   }
-//   dependsOn: [
-//     apiSendFunctionAppName_appsettings
-//   ]
-// }
+resource apiSendFunctionAppName_web 'Microsoft.Web/sites/sourcecontrols@2021-03-01' = if (!empty(gitRepoUrl)) {
+  parent: apiSendFunctionAppName
+  name: 'web'
+  properties: {
+    repoUrl: gitRepoUrl
+    branch: gitBranch
+    isManualIntegration: true
+  }
+  dependsOn: [
+    apiSendFunctionAppName_appsettings
+  ]
+}
 
 resource keyvaultName 'Microsoft.KeyVault/vaults@2021-10-01' = {
   name: keyvaultName_var
