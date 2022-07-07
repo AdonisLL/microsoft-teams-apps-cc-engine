@@ -56,18 +56,18 @@ jobs:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
             enable-AzPSSession: true
 
-      - name: Check out repo        
-        uses: actions/checkout@v3
-      - run: |
-          ./Deployment/scripts/create-rg-managed-identity.ps1
-        shell: pwsh  
+      # - name: Check out repo        
+      #   uses: actions/checkout@v3
+      # - run: |
+      #     ./Deployment/scripts/create-rg-managed-identity.ps1
+      #   shell: pwsh  
 
-      # - name: 'Set Function App Permissions'
-      #   uses: azure/powershell@v1
-      #   with:
-      #        inlineScript: |
-      #          ./Deployment/scripts/create-rg-managed-identity.ps1
-      #        azPSVersion: "latest"
+      - name: 'Set Function App Permissions'
+        uses: azure/powershell@v1
+        with:
+             inlineScript: |
+               ./Deployment/scripts/create-rg-managed-identity.ps1
+             azPSVersion: "latest"
 
       # # Get the web app name
       # - name: Azure CLI script
