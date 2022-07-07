@@ -1,7 +1,8 @@
 name: Deploy CC Prep Function 
 
 on:
-  [push]
+  workflow_dispatch:
+    
 
 # CONFIGURATION
 # For help, go to https://github.com/Azure/Actions
@@ -14,7 +15,7 @@ env:
   AZURE_FUNCTIONAPP_NAME: cc-app75u4uijj2mhu4-prep-function  # set this to your application's name
   AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/CompanyCommunicator.Prep.Func'    # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '3.1.*'              # set this to the dotnet version to use
-
+  OUTPUT_PATH: ${{ github.workspace }}/.output
 
 jobs:
 
