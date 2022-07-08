@@ -45,3 +45,13 @@ module deploy 'deploy.bicep' = {
     location: location
   }
 }
+
+
+output keyVaultName string = deploy.outputs.keyVaultName
+output authorBotId string = deploy.outputs.authorBotId
+output userBotId string = deploy.outputs.userBotId
+output botAppName string = deploy.outputs.botAppName
+output prepFunctionAppName string = deploy.outputs.prepFunctionAppName
+output sendFunctionAppName string = deploy.outputs.sendFunctionAppName
+output dataFunctionAppName string = deploy.outputs.dataFunctionAppName
+output apiSendFunctionAppName string = deploy.outputs.apiSendFunctionAppName
