@@ -476,19 +476,6 @@ resource botAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   ]
 }
 
-// resource botAppName_web 'Microsoft.Web/sites/sourcecontrols@2016-08-01' = if (!empty(gitRepoUrl)) {
-//   parent: botAppName
-//   name: 'web'
-//   properties: {
-//     repoUrl: gitRepoUrl
-//     branch: gitBranch
-//     isManualIntegration: true
-//   }
-//   dependsOn: [
-//     botAppName_appsettings
-//   ]
-// }
-
 resource prepFunctionAppName 'Microsoft.Web/sites@2021-03-01' = {
   name: prepFunctionAppName_var
   location: location
@@ -515,7 +502,6 @@ resource prepFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01'
   parent: prepFunctionAppName
   name: 'appsettings'
   properties: {
-    PROJECT: 'Source\\CompanyCommunicator.Prep.Func\\Microsoft.Teams.Apps.CompanyCommunicator.Prep.Func.csproj'
     SITE_ROLE: 'function'
     'i18n:DefaultCulture': i18n_DefaultCulture
     'i18n:SupportedCultures': i18n_SupportedCultures
@@ -1163,7 +1149,13 @@ resource frontDoorName 'Microsoft.Network/frontDoors@2020-05-01' = if (useFrontD
   ]
 }
 
+
 output keyVaultName string = keyvaultName_var
 output authorBotId string = authorClientId
 output userBotId string = userClientId
 output appDomain string = (useFrontDoor ? frontDoorDomain : 'Please create a custom domain name for ${botAppDomain} and use that in the manifest')
+output botAppName string = botAppName.name
+output prepFunctionAppName string = prepFunctionAppName.name
+output sendFunctionAppName string = sendFunctionAppName.name
+output dataFunctionAppName string = dataFunctionAppName.name
+output apiSendFunctionAppName string = apiSendFunctionAppName.name
