@@ -12,9 +12,9 @@ on:
   #   branches: [ main ]
   #   paths:
   #     - "Deployment/bicep/*"
-  
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+
+# Allows you to run this workflow manually from the Actions tab
+ workflow_dispatch:
    inputs:
     base_resource_name: 
      description: 'The base name to use for the resources that will be provisioned.'
@@ -29,12 +29,25 @@ on:
      required: true
      default: 'eastus'
 
+env:
+    DOTNET_VERSION: '3.1.x'           # set this to the dot net version to use
+    WEBSITE_NAME: ''
+    OUTPUT_PATH: ${{ github.workspace }}/.output
+  
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-infra:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+
+    outputs:
+      botAppName: ${{ steps.deployInfra.outputs.botAppName }}
+      prepFunctionAppName: ${{ steps.deployInfra.outputs.prepFunctionAppName }}
+      sendFunctionAppName: ${{ steps.deployInfra.outputs.sendFunctionAppName }}
+      dataFunctionAppName: ${{ steps.deployInfra.outputs.dataFunctionAppName }}
+      apiSendFunctionAppName: ${{ steps.deployInfra.outputs.apiSendFunctionAppName }}
+      
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -78,3 +91,245 @@ jobs:
             senderUPNList=${{  github.event.inputs.sender_upn_list }}
             location=${{  github.event.inputs.location }}
           failOnStdErr: false
+
+
+
+  build-CC-bot-web-app:
+    needs: build-infra
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+
+      # Checkout the repo
+      - uses: actions/checkout@v3
+      
+      # Setup .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }} 
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          npm ci 
+          npm run build --if-present
+        working-directory: "./Source/CompanyCommunicator/ClientApp"
+        #--ignore-scripts
+
+      # Run dotnet restore
+      - name: dotnet restore
+        run: |
+          dotnet restore "./Source/CompanyCommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj"
+
+      # Run dotnet build 
+      - name: dotnet build 
+        run: |
+          dotnet build "./Source/CompanyCommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" --configuration Release
+
+      # Run dotnet publish
+      - name: dotnet publish
+        run: |
+          dotnet publish "./Source/CompanyCommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj" -c Release -o ${{env.DOTNET_ROOT}}/ccapp
+
+      # Azure Login
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Get the web app name
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            echo "WEBSITE_NAME="$(awk -F'.' '{gsub("\"", "", $1); print $1}' <<< $(az webapp list -g ${{ secrets.AZURE_RG }} --query [0].defaultHostName)) >> $GITHUB_ENV
+      
+
+      - name: 'Run Azure webapp deploy action using publish profile credentials'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.WEBSITE_NAME }} # Replace with your app name
+          package: ${{env.DOTNET_ROOT}}/ccapp
+
+
+  build-deploy-data-function:
+      runs-on: ubuntu-latest
+      needs: build-infra
+      env: 
+        AZURE_FUNCTIONAPP_NAME: ${{ needs.build-infra.outputs.dataFunctionAppName }}
+        AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/CompanyCommunicator.Data.Func' 
+
+      steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v2
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish Functions
+        run: dotnet publish ./Source/CompanyCommunicator.Data.Func/Microsoft.Teams.Apps.CompanyCommunicator.Data.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+
+      - name: Package Functions
+        uses: actions/upload-artifact@v3
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+ 
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Function to Azure
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package:  ${{ env.OUTPUT_PATH }}
+
+
+    
+
+  build-deploy-prep-function:
+      runs-on: ubuntu-latest
+      needs: build-infra
+      env: 
+        AZURE_FUNCTIONAPP_NAME: ${{ needs.build-infra.outputs.prepFunctionAppName }}
+        AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/CompanyCommunicator.Prep.Func' 
+
+      steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v2
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish Functions
+        run: dotnet publish ./Source/CompanyCommunicator.Prep.Func/Microsoft.Teams.Apps.CompanyCommunicator.Prep.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+
+      - name: Package Functions
+        uses: actions/upload-artifact@v3
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+ 
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Function to Azure
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package:  ${{ env.OUTPUT_PATH }}
+
+
+
+
+
+  build-deploy-send-function:
+      runs-on: ubuntu-latest
+      needs: build-infra
+      env: 
+        AZURE_FUNCTIONAPP_NAME: ${{ needs.build-infra.outputs.sendFunctionAppName }}
+        AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/CompanyCommunicator.Send.Func' 
+
+      steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v2
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish Functions
+        run: dotnet publish ./Source/CompanyCommunicator.Send.Func/Microsoft.Teams.Apps.CompanyCommunicator.Send.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+
+      - name: Package Functions
+        uses: actions/upload-artifact@v3
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+ 
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Function to Azure
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package:  ${{ env.OUTPUT_PATH }}
+
+    
+
+  build-deploy-api-send-function:
+      runs-on: ubuntu-latest
+      needs: build-infra
+      env: 
+        AZURE_FUNCTIONAPP_NAME: ${{ needs.build-infra.outputs.apiSendFunctionAppName }}
+        AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func' 
+
+      steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v2
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish Functions
+        run: dotnet publish ./Source/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+
+      - name: Package Functions
+        uses: actions/upload-artifact@v3
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+ 
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Function to Azure
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package:  ${{ env.OUTPUT_PATH }}
