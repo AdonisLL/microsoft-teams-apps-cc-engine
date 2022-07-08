@@ -437,7 +437,6 @@ resource botAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: botAppName
   name: 'appsettings'
   properties: {
-    PROJECT: 'Source/CompanyCommunicator/Microsoft.Teams.Apps.CompanyCommunicator.csproj'
     SITE_ROLE: 'app'
     'i18n:DefaultCulture': i18n_DefaultCulture
     'i18n:SupportedCultures': i18n_SupportedCultures
