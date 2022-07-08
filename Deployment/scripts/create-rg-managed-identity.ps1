@@ -1,5 +1,12 @@
 #!/bin/bash
 Write-Host 'Step to get AZ Access Token'
+
+Write-Host 'Install MS Graph Module'
+Install-Module Microsoft.Graph -Scope CurrentUser
+
+Write-Host 'Install AZ Accounts Module'
+Install-Module -Name Az
+
 $token = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com"
 Write-Host $token
 Connect-MgGraph -AccessToken $token.Token
