@@ -1,4 +1,4 @@
-name: Deploy CC Prep Function 
+name: Deploy CC Data Function 
 
 on:
   workflow_dispatch:
@@ -12,8 +12,8 @@ on:
 #
 # 2. Change these variables for your configuration:
 env:
-  AZURE_FUNCTIONAPP_NAME: 'cc-app75u4uijj2mhu4-prep-function'  # set this to your application's name
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/CompanyCommunicator.Prep.Func'    # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_NAME: 'cc-app75u4uijj2mhu4-data-function'  # set this to your application's name
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/CompanyCommunicator.Data.Func'    # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '3.1.*'              # set this to the dotnet version to use
   OUTPUT_PATH: ${{ github.workspace }}/.output
 
@@ -31,7 +31,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish Functions
-        run: dotnet publish ./Source/CompanyCommunicator.Prep.Func/Microsoft.Teams.Apps.CompanyCommunicator.Prep.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+        run: dotnet publish ./Source/CompanyCommunicator.Data.Func/Microsoft.Teams.Apps.CompanyCommunicator.Data.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
 
       - name: Package Functions
         uses: actions/upload-artifact@v3

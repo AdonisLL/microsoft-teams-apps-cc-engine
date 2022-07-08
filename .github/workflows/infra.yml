@@ -55,12 +55,7 @@ jobs:
          with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
             enable-AzPSSession: true
-
-      # - name: Check out repo        
-      #   uses: actions/checkout@v3
-      # - run: |
-      #     ./Deployment/scripts/create-rg-managed-identity.ps1
-      #   shell: pwsh  
+            
 
       - name: 'Set Function App Permissions'
         uses: azure/powershell@v1
@@ -69,40 +64,17 @@ jobs:
                ./Deployment/scripts/create-rg-managed-identity.ps1
              azPSVersion: "latest"
 
-      # # Get the web app name
-      # - name: Azure CLI script
-      #   uses: azure/CLI@v1
-      #   with:
-      #     azcliversion: 2.30.0
-      #     inlineScript: |
-      #       echo "APP_REGID="$(awk -F'.' '{gsub("\"", "", $1); print $1}' <<< $(az identity create -g ${{ secrets.AZURE_RG }} -n AppRegCreator --out tsv --query principalId)) >> $GITHUB_ENV
-
      
-
-
-      #  # Deploy Bicep file
-      # - name: 'deploy using env vars'
-      #   id: 'deployInfra'
-      #   uses: azure/arm-deploy@v1
-      #   with:
-      #     subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
-      #     resourceGroupName: ${{ secrets.AZURE_RG }}
-      #     template: ./Deployment/bicep/identity-roleassignment.bicep
-      #     parameters: 
-      #       roleDefinitionResourceId='9b895d92-2cd3-44c7-9d02-a6ac2d5ea5c3'
-      #       principalId=${{  github.event.inputs.sender_upn_list }}
-      #     failOnStdErr: false    
-      
-      # # Deploy Bicep file
-      # - name: 'deploy using env vars'
-      #   id: 'deployInfra'
-      #   uses: azure/arm-deploy@v1
-      #   with:
-      #     subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
-      #     resourceGroupName: ${{ secrets.AZURE_RG }}
-      #     template: ./Deployment/bicep/main.bicep
-      #     parameters: 
-      #       baseResourceName=${{ github.event.inputs.base_resource_name }}
-      #       senderUPNList=${{  github.event.inputs.sender_upn_list }}
-      #       location=${{  github.event.inputs.location }}
-      #     failOnStdErr: false
+      # Deploy Bicep file
+      - name: 'deploy using env vars'
+        id: 'deployInfra'
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          resourceGroupName: ${{ secrets.AZURE_RG }}
+          template: ./Deployment/bicep/main.bicep
+          parameters: 
+            baseResourceName=${{ github.event.inputs.base_resource_name }}
+            senderUPNList=${{  github.event.inputs.sender_upn_list }}
+            location=${{  github.event.inputs.location }}
+          failOnStdErr: false
