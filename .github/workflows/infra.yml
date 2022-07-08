@@ -52,11 +52,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
-    # Azure Login
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
@@ -243,9 +238,6 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package:  ${{ env.OUTPUT_PATH }}
-
-
-
 
 
   build-deploy-send-function:

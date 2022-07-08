@@ -1,5 +1,5 @@
 #!/bin/bash
-
+Write-Host 'Step to get AZ Access Token'
 $token = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com"
 Write-Host $token
 Connect-MgGraph -AccessToken $token.Token
