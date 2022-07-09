@@ -1,11 +1,11 @@
 #!/bin/bash
 Write-Host 'Step to get AZ Access Token'
 
-Write-Host 'Install MS Graph Module'
-Install-Module Microsoft.Graph -Scope CurrentUser
+# Write-Host 'Install MS Graph Module'
+# Install-Module Microsoft.Graph -Scope CurrentUsers
 
-Write-Host 'Install AZ Accounts Module'
-Install-Module -Name Az
+# Write-Host 'Install AZ Accounts Module'
+# Install-Module -Name Az
 
 $token = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com"
 Write-Host $token
@@ -13,6 +13,10 @@ Connect-MgGraph -AccessToken $token.Token
 
 
 $appregId = az identity create -g rg-company-communicator -n AppRegCreator --out tsv --query principalId
+
+Write-Host 'Sleeping for 60 seconds..... for user creation' -BackgroundColor Green
+Start-Sleep -Seconds 60
+
 
 $checkUri = "https://graph.microsoft.com/v1.0//roleManagement/directory/roleAssignments?$filter=principalId eq '$appregId'" 
 
