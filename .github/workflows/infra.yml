@@ -161,7 +161,7 @@ jobs:
 
       steps:
       - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
         uses: actions/setup-dotnet@v1
@@ -169,19 +169,19 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish Functions
-        run: dotnet publish ./Source/CompanyCommunicator.Data.Func/Microsoft.Teams.Apps.CompanyCommunicator.Data.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+        run: dotnet publish ./Source/CompanyCommunicator.Data.Func/Microsoft.Teams.Apps.CompanyCommunicator.Data.Func.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/dataFunctionApp
 
-      - name: Package Functions
-        uses: actions/upload-artifact@v3
-        with:
-          name: functions
-          path: ${{ env.OUTPUT_PATH }}
+      # - name: Package Functions
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: functions
+      #     path: ${{ env.OUTPUT_PATH }}
  
-      - name: Download Artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: functions
-          path: ${{ env.OUTPUT_PATH }}
+      # - name: Download Artifact
+      #   uses: actions/download-artifact@v1
+      #   with:
+      #     name: functions
+      #     path: ${{ env.OUTPUT_PATH }}
 
       - name: "Login via Azure CLI"
         uses: azure/login@v1
@@ -192,7 +192,7 @@ jobs:
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package:  ${{ env.OUTPUT_PATH }}
+          package:  ${{env.DOTNET_ROOT}}/dataFunctionApp
 
 
     
@@ -206,7 +206,7 @@ jobs:
 
       steps:
       - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
         uses: actions/setup-dotnet@v1
@@ -214,19 +214,19 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish Functions
-        run: dotnet publish ./Source/CompanyCommunicator.Prep.Func/Microsoft.Teams.Apps.CompanyCommunicator.Prep.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+        run: dotnet publish ./Source/CompanyCommunicator.Prep.Func/Microsoft.Teams.Apps.CompanyCommunicator.Prep.Func.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/prepFunctionApp
 
-      - name: Package Functions
-        uses: actions/upload-artifact@v3
-        with:
-          name: functions
-          path: ${{ env.OUTPUT_PATH }}
+      # - name: Package Functions
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: functions
+      #     path: ${{ env.OUTPUT_PATH }}
  
-      - name: Download Artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: functions
-          path: ${{ env.OUTPUT_PATH }}
+      # - name: Download Artifact
+      #   uses: actions/download-artifact@v1
+      #   with:
+      #     name: functions
+      #     path: ${{ env.OUTPUT_PATH }}
 
       - name: "Login via Azure CLI"
         uses: azure/login@v1
@@ -237,7 +237,7 @@ jobs:
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package:  ${{ env.OUTPUT_PATH }}
+          package:  ${{env.DOTNET_ROOT}}/prepFunctionApp
 
 
   build-deploy-send-function:
@@ -257,19 +257,19 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish Functions
-        run: dotnet publish ./Source/CompanyCommunicator.Send.Func/Microsoft.Teams.Apps.CompanyCommunicator.Send.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+        run: dotnet publish ./Source/CompanyCommunicator.Send.Func/Microsoft.Teams.Apps.CompanyCommunicator.Send.Func.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/sendFunctionApp
 
-      - name: Package Functions
-        uses: actions/upload-artifact@v3
-        with:
-          name: functions
-          path: ${{ env.OUTPUT_PATH }}
+      # - name: Package Functions
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: functions
+      #     path: ${{ env.OUTPUT_PATH }}
  
-      - name: Download Artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: functions
-          path: ${{ env.OUTPUT_PATH }}
+      # - name: Download Artifact
+      #   uses: actions/download-artifact@v1
+      #   with:
+      #     name: functions
+      #     path: ${{ env.OUTPUT_PATH }}
 
       - name: "Login via Azure CLI"
         uses: azure/login@v1
@@ -280,7 +280,7 @@ jobs:
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package:  ${{ env.OUTPUT_PATH }}
+          package:  ${{env.DOTNET_ROOT}}/sendFunctionApp
 
     
 
@@ -301,19 +301,19 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish Functions
-        run: dotnet publish ./Source/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj --configuration Release --output ${{ env.OUTPUT_PATH }}
+        run: dotnet publish ./Source/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/apiSendFunctionApp
 
-      - name: Package Functions
-        uses: actions/upload-artifact@v3
-        with:
-          name: functions
-          path: ${{ env.OUTPUT_PATH }}
+      # - name: Package Functions
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: functions
+      #     path: ${{ env.OUTPUT_PATH }}
  
-      - name: Download Artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: functions
-          path: ${{ env.OUTPUT_PATH }}
+      # - name: Download Artifact
+      #   uses: actions/download-artifact@v1
+      #   with:
+      #     name: functions
+      #     path: ${{ env.OUTPUT_PATH }}
 
       - name: "Login via Azure CLI"
         uses: azure/login@v1
@@ -324,4 +324,4 @@ jobs:
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package:  ${{ env.OUTPUT_PATH }}
+          package:  ${{env.DOTNET_ROOT}}/apiSendFunctionApp
