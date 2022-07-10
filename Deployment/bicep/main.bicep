@@ -1,11 +1,12 @@
 param baseResourceName string
 param senderUPNList string
 param location string
+param appName string
 
 module userAppModule 'aadresources.bicep' = {
   name:'userApp'
   params:{
-
+    appName: appName
     location:location
     name:'${baseResourceName}-users'
   }
@@ -15,6 +16,7 @@ module userAppModule 'aadresources.bicep' = {
 module authorAppModule 'aadresources.bicep' = {
   name:'authorApp'
   params:{
+    appName: appName
     location:location
     name:'${baseResourceName}-authors'
   }
@@ -25,6 +27,7 @@ module graphAppModule 'aadresources.bicep' = {
   params:{
     location:location
     name:'${baseResourceName}-graph'
+    appName: appName
   }
 }
 

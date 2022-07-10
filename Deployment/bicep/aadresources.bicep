@@ -1,6 +1,7 @@
 param name string
 param location string = resourceGroup().location
 param currentTime string = utcNow()
+param appName string
 
 
 resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
@@ -10,7 +11,7 @@ resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${resourceId( '${resourceGroup().name}', 'Microsoft.ManagedIdentity/userAssignedIdentities', 'AppRegCreator')}': {}
+      '${resourceId( '${resourceGroup().name}', 'Microsoft.ManagedIdentity/userAssignedIdentities', '${appName}')}': {}
     }
   }
   properties: {
