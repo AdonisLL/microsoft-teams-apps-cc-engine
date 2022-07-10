@@ -109,12 +109,6 @@ param hostingPlanSize string = '2'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('The URL to the GitHub repository to deploy.')
-param gitRepoUrl string = 'https://github.com/AdonisLL/microsoft-teams-apps-cc-engine.git'
-
-@description('The branch of the GitHub repository to deploy.')
-param gitBranch string = 'main'
-
 @description('A GUID used to identify the role assignment. This is Default value.')
 @minLength(1)
 param serviceBusWebAppRoleNameGuid string = newGuid()
