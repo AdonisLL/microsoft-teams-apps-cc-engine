@@ -29,9 +29,9 @@ on:
      required: true
      default: 'eastus'
     resourceGroupName: 
-     description: 'Azure location to provision resources'
+     description: 'Resource Group Name (Created if it does not exist.)'
      required: true
-     default: 'eastus'
+     default: 'rg-company-communicator'
 
 env:
     DOTNET_VERSION: '3.1.x'           # set this to the dot net version to use
