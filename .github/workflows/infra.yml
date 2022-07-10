@@ -28,6 +28,10 @@ on:
      description: 'Azure location to provision resources'
      required: true
      default: 'eastus'
+    resourceGroupName: 
+     description: 'Azure location to provision resources'
+     required: true
+     default: 'eastus'
 
 env:
     DOTNET_VERSION: '3.1.x'           # set this to the dot net version to use
@@ -71,7 +75,14 @@ jobs:
              inlineScript: |
                ./Deployment/scripts/create-rg-managed-identity.ps1
              azPSVersion: "latest"
-
+      
+     
+      - uses: Azure/CLI@v1
+        with:
+          inlineScript: |
+            #!/bin/bash
+            az group create --name ${{ github.event.inputs.resourceGroupName }} --location ${{ github.event.inputs.location }}
+            echo "Azure resource group created"
      
       # Deploy Bicep file
       - name: 'deploy using env vars'
@@ -79,7 +90,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
-          #resourceGroupName: ${{ secrets.AZURE_RG }}
+          resourceGroupName: ${{ secrets.AZURE_RG }}
           template: ./Deployment/bicep/main.bicep
           parameters: 
             baseResourceName=${{ github.event.inputs.base_resource_name }}

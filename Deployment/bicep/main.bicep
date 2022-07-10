@@ -1,25 +1,9 @@
-targetScope = 'subscription'
-
 param baseResourceName string
 param senderUPNList string
 param location string
-param resourceGroupName string 
-
-
-
-resource checkResourceGroup  'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
-  name: resourceGroupName
-}
-
-resource resourceGroup  'Microsoft.Resources/resourceGroups@2021-04-01' = if (empty(checkResourceGroup.id)) {
-  name: resourceGroupName
-  location: location
-}
-
 
 module userAppModule 'aadresources.bicep' = {
   name:'userApp'
-  scope: empty(checkResourceGroup.id)  ? checkResourceGroup : resourceGroup
   params:{
 
     location:location
@@ -30,7 +14,6 @@ module userAppModule 'aadresources.bicep' = {
 
 module authorAppModule 'aadresources.bicep' = {
   name:'authorApp'
-  scope: empty(checkResourceGroup.id)  ? checkResourceGroup : resourceGroup
   params:{
     location:location
     name:'${baseResourceName}-authors'
@@ -39,7 +22,6 @@ module authorAppModule 'aadresources.bicep' = {
 
 module graphAppModule 'aadresources.bicep' = {
   name:'graphAppModule'
-  scope: empty(checkResourceGroup.id)  ? checkResourceGroup : resourceGroup
   params:{
     location:location
     name:'${baseResourceName}-graph'
@@ -49,7 +31,6 @@ module graphAppModule 'aadresources.bicep' = {
 
 module deploy 'deploy.bicep' = {
   name:'deploy'
-  scope: empty(checkResourceGroup.id)  ? checkResourceGroup : resourceGroup
   params:{
     authorClientId: authorAppModule.outputs.clientId
     authorClientSecret: authorAppModule.outputs.clientSecret
