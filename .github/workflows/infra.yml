@@ -27,7 +27,7 @@ env:
     DOTNET_VERSION: '3.1.x'           # set this to the dot net version to use
     WEBSITE_NAME: ''
     OUTPUT_PATH: ${{ github.workspace }}/.output
-    APP_REG_USER_NAME: ${{ github.event.inputs.base_resource_name }}_'AppRegistrationUser' 
+    APP_REG_USER_NAME: ${{ github.event.inputs.base_resource_name }}_AppRegistrationUser 
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
