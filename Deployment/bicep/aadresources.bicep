@@ -3,17 +3,16 @@ param location string = resourceGroup().location
 param currentTime string = utcNow()
 
 
-
 resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: name
   location: location
   kind: 'AzurePowerShell'
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${resourceId( '${resourceGroup().name}', 'Microsoft.ManagedIdentity/userAssignedIdentities', 'AppRegCreator')}': {}
-    }
-  }
+  // identity: {
+  //   type: 'UserAssigned'
+  //   userAssignedIdentities: {
+  //     '${resourceId( '${resourceGroup().name}', 'Microsoft.ManagedIdentity/userAssignedIdentities', 'AppRegCreator')}': {}
+  //   }
+  // }
   properties: {
     azPowerShellVersion: '5.0'
     arguments: '-resourceName "${name}"'
