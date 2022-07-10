@@ -1,47 +1,78 @@
-# Company Communicator App Template
+# Company Communicator App Engine Template
 
-| [Documentation](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki) | [Deployment guide powershell](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/Deployment-guide-powershell)  |[Deployment guide](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/Deployment-guide) | [Deployment guide certificate](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/Deployment-guide-certificate) | [Architecture](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/Solution-overview) |
-| ---- | ---- | ---- | ---- | ---- |
+This repo utilizes the core functionality of [Company Communicator](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator) with a focus on sending adaptive card content via a web api.
 
-Company Communicator is a custom Teams app that enables corporate teams to create and send messages intended for multiple teams or large number of employees over chat allowing organization to reach employees right where they collaborate. Use this template for multiple scenarios, such as new initiative announcements, employee onboarding, modern learning and development, or organization-wide broadcasts. 
 
-The app provides an easy interface for designated users to create, preview, collaborate and send messages. It's also a foundation for building custom targeted communication capabilities, such as custom telemetry on how many users acknowledged or interacted with a message.
+##Deployment
 
-![Company Communicator compose message screen](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/images/CompanyCommunicatorCompose.png)
+#####1. Fork this repository
 
-### Key features
-* **Message creation:** Easily create messages by using a team tab where team members who are permissioned can collaborate and create messages.
-* **Audience selection:** Pick from four options to target audience. Send to general channel of selected teams, send in 1:1 chat to members of selected teams, send to all users who have the app installed or send to M365 groups, distribution lists or security groups.
-* **Message metrics:** Export messages delivery report.
-* **Localization:** Supports multiple locales.
-## Get started
+To deploy the application you will need to modify the workflows provided in this repository filling the parameter values with your environment details. So you will need to fork this repository to be able to modify the workflows to match your environment.
 
-Begin with the [Solution overview](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/Solution-overview) to read about what the app does and how it works.
+Note: A fork is a copy of a repository. Forking a repository allows you to freely experiment with changes without affecting the original project.
 
-When you're ready to try out Company Communicator, or to use it in your own organization, you can choose to follow one of the below guides.
-* [Deployment guide powershell](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/Deployment-guide-powershell).
-    * **Recommended** Use this option to deploy the Company Communicator v5.0 using powershell script. The entire set-up is done by the powershell script.
-* [Deployment guide](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/Deployment-guide).
-    * Use this option to deploy the Company Communicator v5.0 with client secrets.
-* [Deployment guide certificate](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/wiki/Deployment-guide-certificate).
-    * Use this option to deploy the Company Communicator v5.0 with certificates.
+You can fork this repository by clicking on the Fork button in the upper right corner of this page.
 
-## Migration 
+![](assets/images/fork.png)
 
-If you already have older version of Company Communicator installed, then please use this [v5 migration guide](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator/wiki/v5-migration-guide). Please note that deploying the major version update, like Company Communicator version 5.0 involves more than syncing the App Service and Azure Functions, so plan to review the migration guide before migrating to latest. 
+#####2. Configure deployment credentials:
+ 
+- Define a new secret under your repository settings, Add secret menu
+  ![](assets/images/secret.png)
+- Store the output of the below az cli command as the value of secret variable name the secrt 'AZURE_CREDENTIALS'
 
-Migrating to newer versions. 
+``` 
+az ad sp create-for-rbac --name "github-deployment" --role contributor \
+                            --scopes /subscriptions/{subscription-id} \
+                            --sdk-auth
+                            
+  # Replace {subscription-id}, {resource-group} with the subscription, resource group details
 
- * [v5 migration guide](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator/wiki/v5-migration-guide)
- * [v4 migration guide](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator/wiki/v4-migration-guide)
- * [v3 migration guide](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator/wiki/v3-migration-guide)
- * [v2 migration guide](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator/wiki/v2-migration-guide)
+  # The command should output a JSON object similar to this:
 
-## Feedback
+ 
+  {
+    "clientId": "<GUID>",
+    "clientSecret": "<STRING>",
+    "subscriptionId": "<GUID>",
+    "tenantId": "<GUID>",
+    "resourceManagerEndpointUrl": "<URL>"
+    (...)
+  } 
+  ```
 
-Thoughts? Questions? Ideas? Share them with us on [Teams UserVoice](https://microsoftteams.uservoice.com/forums/555103-public)!
+##### Manually creating the Credentials object
+If you already created and assigned a Service Principal in Azure you can manually create the .json object above by finding the `clientId`and `clientSecret` on the Service Principal, and your `subscriptionId` and `tenantId` of the subscription and tenant respectively. The resourceManagerEndpointUrl will be https://management.azure.com/ if you are using the public Azure cloud.
 
-Please report bugs and other code issues [here](https://github.com/OfficeDev/microsoft-teams-company-communicator-app/issues/new).
+##### Assign additional permissions
+The created service principal needs additional permissions so it can assign roles to the various App Registrations that need to be created.
+
+1. Sign in to the [Azure portal](https://portal.azure.com/).
+
+2. If you have access to multiple tenants, use the Directories + subscriptions filter  in the top menu to switch to the tenant in which you want to register the application.
+
+3. Search for and select Azure Active Directory.
+
+4. Under Manage, select App registrations, use the search field to select the service principal created for deployment.
+
+
+5. Select API permissions tab, click on Add a permission.
+![](assets/images/azure-api-permissions-page.png)
+
+
+6. Select "Microsoft Graph" and then choose "Application Permissions", Search for "RoleManagement" and select the "RoleManagement.ReadWrite.Directory" permission.
+
+![](assets/images/Request%20API%20permissions.png)
+![](assets/images/Request%20API%20permissions-3.png)
+
+7. Grant admin consent for the added permissions.
+
+![](assets/images/Request%20API%20permissions-4.png)
+
+![](assets/images/Request%20API%20permissions-5.png)
+
+### Run the GitHub Actions workflow.
+
 
 ## Legal notice
 
