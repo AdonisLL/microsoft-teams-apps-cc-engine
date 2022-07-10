@@ -96,7 +96,6 @@ jobs:
             baseResourceName=${{ github.event.inputs.base_resource_name }}
             senderUPNList=${{  github.event.inputs.sender_upn_list }}
             location=${{  github.event.inputs.location }}
-            resourceGroupName= rg-company-communicator
           failOnStdErr: false
 
 
