@@ -12,10 +12,11 @@ Write-Host $token
 Connect-MgGraph -AccessToken $token.Token
 
 $AppName = $env:AppName
+$resourceGroupName = $env:resourceGroupName
 
 #$appregId = az identity create -g rg-company-communicator -n AppRegCreator --out tsv --query principalId
 
-$appregId = az identity create -g rg-company-communicator -n $AppName --out tsv --query principalId
+$appregId = az identity create -g $resourceGroupName -n $AppName --out tsv --query principalId
 
 Write-Host 'Sleeping for 60 seconds..... for user creation' -BackgroundColor Green
 Start-Sleep -Seconds 60

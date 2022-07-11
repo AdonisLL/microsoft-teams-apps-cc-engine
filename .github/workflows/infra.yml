@@ -65,12 +65,13 @@ jobs:
             #!/bin/bash
             az group create --name ${{ github.event.inputs.resourceGroupName }} --location ${{ github.event.inputs.location }}
             echo "Azure resource group created"
-            
+
 
       - name: 'Set Function App Permissions'
         uses: azure/powershell@v1
         env:
           AppName: ${{ env.APP_REG_USER_NAME }} 
+          resourceGroupName:  ${{ github.event.inputs.resourceGroupName }}
         with:
              inlineScript: |
                ./Deployment/scripts/create-rg-managed-identity.ps1
