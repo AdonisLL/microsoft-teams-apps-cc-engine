@@ -684,7 +684,7 @@ resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-
   parent: apiSendFunctionAppName
   name: 'appsettings'
   properties: {
-    PROJECT: 'Source\\Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func\\Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj'
+    PROJECT: 'Source\\CompanyCommunicator.SendWrapper.Func\\Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj'
     SITE_ROLE: 'function'
     'i18n:DefaultCulture': i18n_DefaultCulture
     'i18n:SupportedCultures': i18n_SupportedCultures
