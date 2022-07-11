@@ -19,7 +19,7 @@ on:
      required: true
      default: 'eastus'
     resourceGroupName: 
-     description: 'Resource Group Name (Created if it does not exist.)'
+     description: 'Resource Group Name (Will be created if it does not exist.)'
      required: true
      default: 'rg-company-communicator'
 
