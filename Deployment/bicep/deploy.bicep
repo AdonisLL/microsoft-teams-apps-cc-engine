@@ -700,6 +700,8 @@ resource apiSendFunctionAppName_appsettings 'Microsoft.Web/sites/config@2021-03-
     UseManagedIdentity: 'true'
     UseCertificate: 'false'
     WEBSITE_LOAD_CERTIFICATES: '*'
+    GraphAppId: graphAppId
+    GraphAppPassword: '@Microsoft.KeyVault(SecretUri=${reference(GraphAppSecretResourceId, '2015-06-01').secretUriWithVersion})'
     APPINSIGHTS_INSTRUMENTATIONKEY: '@Microsoft.KeyVault(SecretUri=${reference(AppInsightsSecretResourceId, '2022-07-01').secretUriWithVersion})'
     'KeyVault:Url': keyVaultUrl
     AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName_var};AccountKey=${listKeys(storageAccountName.id, '2015-05-01-preview').key1}'

@@ -65,8 +65,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.Send.Func
                     // Defaulting this value to true because the main app should ensure all
                     // tables exist. It is here as a possible configuration setting in
                     // case it needs to be set differently.
-                    repositoryOptions.EnsureTableExists =
-                        !configuration.GetValue<bool>("IsItExpectedThatTableAlreadyExists", true);
+                    repositoryOptions.EnsureTableExists = true;
                 });
 
             builder.Services.AddLocalization();
