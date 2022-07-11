@@ -103,7 +103,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
 
         [FunctionName("SendApiWrapperFunction_HttpStart")]
         public async Task<ActionResult> HttpStart(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")]
+        [HttpTrigger(AuthorizationLevel.Function, "get", "post")]
             HttpRequest req,
         [DurableClient] IDurableOrchestrationClient starter,
         ILogger log, ExecutionContext context)
@@ -112,8 +112,9 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
             var notificationData = JsonSerializer.Deserialize<DraftNotification>(requestBody, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-            var _groupId = req.Query["groupId"];
+            var _groupId = req.Query["GroupId"];
             var _allUsers = req.Query["AllUsers"];
+            var _teamsChannelId = req.Query["TeamsChannel"];
 
             bool allUsers;
             if (Boolean.TryParse(_allUsers, out allUsers))
@@ -123,6 +124,13 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
             if (!string.IsNullOrEmpty(_groupId) && !allUsers)
             {
                 groupList.Add(_groupId);
+            }
+
+            // General channel of teams.
+            List<string> _teamsChannelList = new List<string>();
+            if (!string.IsNullOrEmpty(_teamsChannelId) && !allUsers)
+            {
+                _teamsChannelList.Add(_teamsChannelId);
             }
 
             DraftNotification notification = new DraftNotification()
