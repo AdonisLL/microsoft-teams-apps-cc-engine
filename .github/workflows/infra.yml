@@ -11,7 +11,7 @@ on:
      required: true
      default: 'CC-API'
     sender_upn_list: 
-     description: 'emicolon-delimited list of the user principal names (UPNs) allowed to send messages.'
+     description: 'If installing authoring app Semicolon-delimited list of the user principal names (UPNs) allowed to send messages.'
      required: false
      default: ''
     location: 

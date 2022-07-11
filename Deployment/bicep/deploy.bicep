@@ -34,7 +34,7 @@ param graphAppId string
 param graphAppSecret string
 
 @description('Semicolon-delimited list of the user principal names (UPNs) allowed to send messages.')
-@minLength(1)
+@minLength(0)
 param senderUPNList string
 
 @description('If proactive app installation should be enabled.')
