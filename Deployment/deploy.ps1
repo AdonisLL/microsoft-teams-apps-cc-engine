@@ -288,7 +288,7 @@ function GetAzureADAppWithSecret {
 # Create/re-set Azure AD app.
 function CreateAzureADApp {
     param(
-        [Parameter(Mandatory = $true)] [string] $AppName,
+        [Parameter(Mandatory = $true)] [string] $appName,
 		[Parameter(Mandatory = $false)] [bool] $ResetAppSecret = $true,
         [Parameter(Mandatory = $false)] [bool] $MultiTenant = $true,
         [Parameter(Mandatory = $false)] [bool] $AllowImplicitFlow
@@ -324,7 +324,7 @@ function CreateAzureADApp {
             }
         } else {
             # Create Azure AD app registration using CLI
-            az ad app create --display-name $appName --available-to-other-tenants $MultiTenant --oauth2-allow-implicit-flow $AllowImplicitFlow
+            $userAppResult = az ad app create --display-name $appName --available-to-other-tenants $MultiTenant --oauth2-allow-implicit-flow $AllowImplicitFlow
 
             WriteI -message "Waiting for app creation to finish..."
 
