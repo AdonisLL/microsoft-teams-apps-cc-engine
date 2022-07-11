@@ -3,9 +3,9 @@
 This repo utilizes the core functionality of [Company Communicator](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator) with a focus on sending adaptive card content via a web api.
 
 
-##Deployment
+## Deployment
 
-#####1. Fork this repository
+##### 1. Fork this repository
 
 To deploy the application you will need to modify the workflows provided in this repository filling the parameter values with your environment details. So you will need to fork this repository to be able to modify the workflows to match your environment.
 
