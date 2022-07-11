@@ -15,7 +15,7 @@ You can fork this repository by clicking on the Fork button in the upper right c
 
 ![](assets/images/fork.png)
 
-#####2. Configure deployment credentials:
+##### 2. Configure deployment credentials:
  
 - Define a new secret under your repository settings, Add secret menu
   ![](assets/images/secret.png)
@@ -71,7 +71,17 @@ The created service principal needs additional permissions so it can assign role
 
 ![](assets/images/Request%20API%20permissions-5.png)
 
-### Run the GitHub Actions workflow.
+### Run the GitHub Actions workflow. 
+
+1. On GitHub.com, navigate to the main page of the repository.
+
+2. Under your repository name, click  Actions.
+
+3. In the left sidebar, click the workflow "Deploy CC Engine Infrastructure".
+
+4. Select the "Run Workflow" button and update the avaiable properties to reflect your installation details.
+
+### API Usage
 
 
 ## Legal notice
