@@ -9,23 +9,34 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Teams.Apps.CompanyCommunicator.Common.Clients;
+using Microsoft.Teams.Apps.CompanyCommunicator.Common.Extensions;
+using Microsoft.Teams.Apps.CompanyCommunicator.Common.Repositories.NotificationData;
+using Microsoft.Teams.Apps.CompanyCommunicator.Common.Repositories.TeamData;
 using Microsoft.Teams.Apps.CompanyCommunicator.Common.Resources;
+using Microsoft.Teams.Apps.CompanyCommunicator.Common.Services.MicrosoftGraph;
 using Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Mappers;
+using Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Models;
 using Newtonsoft.Json;
 using System;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
 {
-    public class DataExportFunction
+    public class MessageReportFunction
     {
         private readonly IStorageClientFactory _storageClientFactory;
         private readonly IStringLocalizer<Strings> _localizer;
         private readonly IDataStreamFacade _userDataStream;
         private IConfiguration _configuration;
+        private INotificationDataRepository _notificationDataRepository;
+        private readonly ITeamDataRepository _teamDataRepository;
+        private readonly IGroupsService _groupsService;
+
+
 
 
         /// <summary>
@@ -34,19 +45,25 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
         /// <param name="storageClientFactory">the storage client factory.</param>
         /// <param name="userDataStream">the user data stream.</param>
         /// <param name="localizer">Localization service.</param>
-        public DataExportFunction(
+        public MessageReportFunction(
             IStorageClientFactory storageClientFactory,
             IDataStreamFacade userDataStream,
             IStringLocalizer<Strings> localizer,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            INotificationDataRepository notificationDataRepository,
+            ITeamDataRepository teamDataRepository,
+            IGroupsService groupsService)
         {
             _storageClientFactory = storageClientFactory ?? throw new ArgumentNullException(nameof(storageClientFactory));
             _userDataStream = userDataStream ?? throw new ArgumentNullException(nameof(userDataStream));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _notificationDataRepository = notificationDataRepository ?? throw new ArgumentNullException(nameof(notificationDataRepository));
+            _teamDataRepository = teamDataRepository ?? throw new ArgumentNullException(nameof(teamDataRepository));
+            _groupsService = groupsService ?? throw new ArgumentNullException(nameof(groupsService));
         }
 
-        [FunctionName("DataExportFunction")]
+        [FunctionName("MessageReportFunction")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
@@ -56,9 +73,55 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
             try
             {
                 string notificationId = req.Query["notificationId"];
-                string response = await this.GetNotificationReport(notificationId, log);
+                string reportLink = await this.GetNotificationReport(notificationId, log);
 
-                return new OkObjectResult(response);
+               var notificationEntity = await _notificationDataRepository.GetAsync(
+               NotificationDataTableNames.SentNotificationsPartition,
+               notificationId);
+                if (notificationEntity == null)
+                {
+                    return new NotFoundResult();
+                }
+
+               var groupNames = await _groupsService.
+               GetByIdsAsync(notificationEntity.Groups).
+               Select(x => x.DisplayName).
+               ToListAsync();
+
+                var result = new SentNotification
+                {
+                    Id = notificationEntity.Id,
+                    Title = notificationEntity.Title,
+                    ImageLink = notificationEntity.ImageLink,
+                    Summary = notificationEntity.Summary,
+                    Author = notificationEntity.Author,
+                    ButtonTitle = notificationEntity.ButtonTitle,
+                    ButtonLink = notificationEntity.ButtonLink,
+                    CreatedDateTime = notificationEntity.CreatedDate,
+                    SentDate = notificationEntity.SentDate,
+                    Succeeded = notificationEntity.Succeeded,
+                    Failed = notificationEntity.Failed,
+                    Unknown = this.GetUnknownCount(notificationEntity),
+                    Canceled = notificationEntity.Canceled > 0 ? notificationEntity.Canceled : (int?)null,
+                    TeamNames = await _teamDataRepository.GetTeamNamesByIdsAsync(notificationEntity.Teams),
+                    RosterNames = await _teamDataRepository.GetTeamNamesByIdsAsync(notificationEntity.Rosters),
+                    GroupNames = groupNames,
+                    AllUsers = notificationEntity.AllUsers,
+                    SendingStartedDate = notificationEntity.SendingStartedDate,
+                    ErrorMessage = notificationEntity.ErrorMessage,
+                    WarningMessage = notificationEntity.WarningMessage,
+                    CanDownload =  true,
+                    SendingCompleted = notificationEntity.IsCompleted(),
+                    ReportDownloadUrl = reportLink
+                };
+
+
+                if (notificationId == null)
+                {
+                    throw new ArgumentNullException(nameof(notificationId));
+                }
+
+                return new OkObjectResult(result);
             }
             catch(Exception ex)
             {
@@ -119,6 +182,22 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
             var guid = Guid.NewGuid().ToString();
             var fileName = "FileName_ExportData";
             return $"{fileName}_{guid}.zip";
+        }
+
+        private int? GetUnknownCount(NotificationDataEntity notificationEntity)
+        {
+            var unknown = notificationEntity.Unknown;
+
+            // In CC v2, the number of throttled recipients are counted and saved in NotificationDataEntity.Unknown property.
+            // However, CC v1 saved the number of throttled recipients in NotificationDataEntity.Throttled property.
+            // In order to make it backward compatible, we add the throttled number to the unknown variable.
+            var throttled = notificationEntity.Throttled;
+            if (throttled > 0)
+            {
+                unknown += throttled;
+            }
+
+            return unknown > 0 ? unknown : (int?)null;
         }
     }
 

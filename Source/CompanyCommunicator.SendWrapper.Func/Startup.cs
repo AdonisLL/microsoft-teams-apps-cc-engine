@@ -23,6 +23,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
     using Microsoft.Teams.Apps.CompanyCommunicator.Common.Repositories;
     using Microsoft.Teams.Apps.CompanyCommunicator.Common.Repositories.NotificationData;
     using Microsoft.Teams.Apps.CompanyCommunicator.Common.Repositories.SentNotificationData;
+    using Microsoft.Teams.Apps.CompanyCommunicator.Common.Repositories.TeamData;
     using Microsoft.Teams.Apps.CompanyCommunicator.Common.Repositories.UserData;
     using Microsoft.Teams.Apps.CompanyCommunicator.Common.Secrets;
     using Microsoft.Teams.Apps.CompanyCommunicator.Common.Services.CommonBot;
@@ -85,10 +86,9 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
 
             //// Add repositories.
             builder.Services.AddSingleton<ISentNotificationDataRepository, SentNotificationDataRepository>();
-
+            builder.Services.AddSingleton<ITeamDataRepository, TeamDataRepository>();
             builder.Services.AddTransient<TableRowKeyGenerator>();
             builder.Services.AddSingleton<INotificationDataRepository, NotificationDataRepository>();
-            builder.Services.AddSingleton<ISentNotificationDataRepository, SentNotificationDataRepository>();
             builder.Services.AddHttpClient();
 
 
@@ -104,6 +104,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
             builder.Services.AddSingleton<IUserDataRepository, UserDataRepository>();
             builder.Services.AddTransient<IUserTypeService, UserTypeService>();
             builder.Services.AddScoped<IUsersService>(sp => sp.GetRequiredService<IGraphServiceFactory>().GetUsersService());
+            builder.Services.AddScoped<IGroupsService>(sp => sp.GetRequiredService<IGraphServiceFactory>().GetGroupsService());
 
             // Add graph services.
             this.AddGraphServices(builder);
