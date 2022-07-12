@@ -889,7 +889,9 @@
             "CleanUpScheduleTriggerTime": "30 23 * * *",
             "CleanUpFile": "1",
             "DOTNET_ADD_GLOBAL_TOOLS_TO_PATH": "false",
-            "WEBSITE_NODE_DEFAULT_VERSION": "16.13.0"
+            "WEBSITE_NODE_DEFAULT_VERSION": "16.13.0",
+            "GraphAppId": "[parameters('graphAppId')]",
+            "GraphAppPassword": "[concat('@Microsoft.KeyVault(SecretUri=', reference(variables('GraphAppSecretResourceId'),'2015-06-01').secretUriWithVersion, ')')]"
           }
         },
         {
@@ -973,7 +975,10 @@
                 "CleanUpScheduleTriggerTime": "30 23 * * *",
                 "CleanUpFile": "1",
                 "DOTNET_ADD_GLOBAL_TOOLS_TO_PATH": "false",
-                "WEBSITE_NODE_DEFAULT_VERSION": "16.13.0"
+                "WEBSITE_NODE_DEFAULT_VERSION": "16.13.0",
+                "TenantId":"[parameters('tenantId')]",
+                "GraphAppId": "[parameters('graphAppId')]",
+                "GraphAppPassword": "[concat('@Microsoft.KeyVault(SecretUri=', reference(variables('GraphAppSecretResourceId'),'2015-06-01').secretUriWithVersion, ')')]"
             }
          },
          {

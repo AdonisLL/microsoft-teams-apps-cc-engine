@@ -115,30 +115,40 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
             var _groupId = req.Query["GroupId"];
             var _allUsers = req.Query["AllUsers"];
             var _teamsChannelId = req.Query["TeamsChannel"];
+            var _title = req.Query["Title"];
 
-            bool allUsers;
-            if (Boolean.TryParse(_allUsers, out allUsers))
-                allUsers = Convert.ToBoolean(_allUsers);
+
 
             List<string> groupList = new List<string>();
-            if (!string.IsNullOrEmpty(_groupId) && !allUsers)
+            if (!string.IsNullOrEmpty(_groupId))
             {
                 groupList.Add(_groupId);
             }
 
             // General channel of teams.
             List<string> _teamsChannelList = new List<string>();
-            if (!string.IsNullOrEmpty(_teamsChannelId) && !allUsers)
+            if (!string.IsNullOrEmpty(_teamsChannelId))
             {
                 _teamsChannelList.Add(_teamsChannelId);
             }
+
+            bool allUsers;
+            if (Boolean.TryParse(_allUsers, out allUsers))
+            {
+                allUsers = Convert.ToBoolean(_allUsers);
+                groupList = new List<string>();
+            }
+
+
 
             DraftNotification notification = new DraftNotification()
             {
                 AdaptiveCardContent = requestBody,
                 Groups = groupList,
                 AllUsers = allUsers,
-                SendInstanceId = Guid.NewGuid().ToString()
+                SendInstanceId = Guid.NewGuid().ToString(),
+                Teams = _teamsChannelList,
+                Title = !string.IsNullOrEmpty(_groupId) ? _title.ToString() : string.Empty
             };
 
             if (notification == null)

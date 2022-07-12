@@ -114,7 +114,8 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
                     CanDownload =  true,
                     SendingCompleted = notificationEntity.IsCompleted(),
                     ReportDownloadUrl = reportLink,
-                    Duration = (TimeSpan)(notificationEntity.SentDate - notificationEntity.SendingStartedDate)
+                    Duration = (TimeSpan)(notificationEntity.SentDate - notificationEntity.SendingStartedDate),
+                    TotalMessageCount = notificationEntity.TotalMessageCount
                 };
 
 

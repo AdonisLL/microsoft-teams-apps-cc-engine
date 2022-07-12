@@ -86,5 +86,11 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Models
         /// Gets or sets the message sending duration
         /// </summary>
         public TimeSpan Duration { get; set; }
+
+        /// <summary>
+        /// Gets or sets theTotalMessageCount
+        /// </summary>
+        public int TotalMessageCount { get; set; }
+        
     }
 }
