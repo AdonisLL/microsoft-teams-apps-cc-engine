@@ -80,5 +80,11 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Models
         /// Gets or sets the URL to download the status report
         /// </summary>
         public string ReportDownloadUrl { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the message sending duration
+        /// </summary>
+        public TimeSpan Duration { get; set; }
     }
 }

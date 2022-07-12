@@ -76,12 +76,13 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
                 string reportLink = await this.GetNotificationReport(notificationId, log);
 
                var notificationEntity = await _notificationDataRepository.GetAsync(
-               NotificationDataTableNames.SentNotificationsPartition,
-               notificationId);
-                if (notificationEntity == null)
-                {
-                    return new NotFoundResult();
-                }
+               partitionKey: NotificationDataTableNames.SentNotificationsPartition,
+               rowKey:notificationId);
+
+              if (notificationEntity == null)
+              {
+                return new NotFoundResult();
+              }
 
                var groupNames = await _groupsService.
                GetByIdsAsync(notificationEntity.Groups).
@@ -112,7 +113,8 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
                     WarningMessage = notificationEntity.WarningMessage,
                     CanDownload =  true,
                     SendingCompleted = notificationEntity.IsCompleted(),
-                    ReportDownloadUrl = reportLink
+                    ReportDownloadUrl = reportLink,
+                    Duration = (TimeSpan)(notificationEntity.SentDate - notificationEntity.SendingStartedDate)
                 };
 
 
