@@ -52,7 +52,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
 
                 if (status == nameof(NotificationStatus.Sent))
                 {
-                    return new OkResult();
+                    return new OkObjectResult(new SentResponse() { NotificationId = notificationId});
                 }
                 else
                 {
@@ -179,4 +179,9 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
             return functionResp.RuntimeStatus;
         }
     }
+}
+
+public class SentResponse
+{
+    public string NotificationId { get; set; }
 }
