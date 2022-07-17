@@ -44,24 +44,18 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
         public static async Task<ActionResult> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
+            DraftNotification notification = context.GetInput<DraftNotification>();
+            string notificationId = await context.CallActivityAsync<string>("SendApiWrapper_Work", notification);
+
             try
             {
-                DraftNotification notification = context.GetInput<DraftNotification>();
-                string notificationId = await context.CallActivityAsync<string>("SendApiWrapper_Work", notification);
                 string status = await context.CallActivityAsync<string>("SendApiWrapper_CheckStatus", notificationId);
 
-                if (status == nameof(NotificationStatus.Sent))
-                {
-                    return new OkObjectResult(new SentResponse() { NotificationId = notificationId});
-                }
-                else
+                while (status != nameof(NotificationStatus.Sent))
                 {
                     if (
                         status != nameof(NotificationStatus.Canceled) &&
-                        status != nameof(NotificationStatus.Failed) &&
-                        status != nameof(NotificationStatus.Canceling)
-
-                        )
+                        status != nameof(NotificationStatus.Failed))
 
                     {
                         DateTime dueTime = context.CurrentUtcDateTime.AddMinutes(1);
@@ -70,16 +64,16 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
                     }
                     else
                     {
-                        return new BadRequestObjectResult($"Notification status = {status}");
+                        return new BadRequestObjectResult(new SentResponse() { NotificationId = notificationId, Status = $"Notification status = {status}" });
                     }
                 }
-
-                return new NotFoundResult();
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult(ex.Message);
+                return new BadRequestObjectResult(new SentResponse() { NotificationId = notificationId, Status = ex.Message });
             }
+
+            return new OkObjectResult(new SentResponse() { NotificationId = notificationId });
         }
 
         [FunctionName("SendApiWrapper_Work")]
@@ -117,8 +111,6 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
             var _teamsChannelId = req.Query["TeamsChannel"];
             var _title = req.Query["Title"];
 
-
-
             List<string> groupList = new List<string>();
             if (!string.IsNullOrEmpty(_groupId))
             {
@@ -138,8 +130,6 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
                 allUsers = Convert.ToBoolean(_allUsers);
                 groupList = new List<string>();
             }
-
-
 
             DraftNotification notification = new DraftNotification()
             {
@@ -184,4 +174,6 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
 public class SentResponse
 {
     public string NotificationId { get; set; }
+
+    public string Status { get; set; }
 }
