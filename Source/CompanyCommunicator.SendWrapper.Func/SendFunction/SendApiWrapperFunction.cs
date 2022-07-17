@@ -66,6 +66,8 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
                     {
                         return new BadRequestObjectResult(new SentResponse() { NotificationId = notificationId, Status = $"Notification status = {status}" });
                     }
+                    context.SetCustomStatus($"Notification status = {status}");
+
                 }
             }
             catch (Exception ex)
