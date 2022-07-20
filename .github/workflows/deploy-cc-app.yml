@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
    inputs:
     APP_NAME: 
-     description: 'The name of the existing function app for deployment'
+     description: 'The url of of the app for deployment ex... ccwebapp.azurewebsites.net'
      required: true
    # Allows you to run this workflow remotley from GitHub API 
   repository_dispatch:
