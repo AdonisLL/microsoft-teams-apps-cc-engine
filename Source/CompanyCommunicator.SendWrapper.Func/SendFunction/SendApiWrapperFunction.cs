@@ -140,7 +140,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
                 AllUsers = allUsers,
                 SendInstanceId = Guid.NewGuid().ToString(),
                 Teams = _teamsChannelList,
-                Title = !string.IsNullOrEmpty(_groupId) ? _title.ToString() : string.Empty
+                Title = !string.IsNullOrEmpty(_title) ? _title.ToString() : string.Empty
             };
 
             if (notification == null)
