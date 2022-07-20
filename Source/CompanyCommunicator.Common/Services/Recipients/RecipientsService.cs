@@ -32,7 +32,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.Common.Services.Recipients
         /// <inheritdoc/>
         public async Task<RecipientsInfo> BatchRecipients(IEnumerable<SentNotificationDataEntity> recipients)
         {
-            if (recipients == null)
+            if (recipients == null || recipients.Count() == 0)
             {
                 throw new ArgumentNullException(nameof(IEnumerable<SentNotificationDataEntity>));
             }

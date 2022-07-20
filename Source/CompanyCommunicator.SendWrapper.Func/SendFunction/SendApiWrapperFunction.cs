@@ -1,3 +1,4 @@
+using Dynamitey;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -41,7 +42,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
         }
 
         [FunctionName("SendApiWrapper_Orchestration")]
-        public static async Task<ActionResult> RunOrchestrator(
+        public static async Task<MessageResponse> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
             DraftNotification notification = context.GetInput<DraftNotification>();
@@ -49,33 +50,30 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
 
             try
             {
-                string status = await context.CallActivityAsync<string>("SendApiWrapper_CheckStatus", notificationId);
+                var notificationItem = await context.CallActivityAsync<NotificationDataEntity>("SendApiWrapper_CheckStatus", notificationId);
+                var status = notificationItem.Status;
 
-                while (status != nameof(NotificationStatus.Sent))
+                while (notificationItem.IsCompleted == false)
                 {
-                    if (
-                        status != nameof(NotificationStatus.Canceled) &&
-                        status != nameof(NotificationStatus.Failed))
-
+                    DateTime dueTime = context.CurrentUtcDateTime.AddMinutes(1);
+                    await context.CreateTimer(dueTime, CancellationToken.None);
+                    notificationItem = await context.CallActivityAsync<NotificationDataEntity>("SendApiWrapper_CheckStatus", notificationId);
+                    if(notificationItem.Status == nameof(NotificationStatus.Failed) || notificationItem.Status == nameof(NotificationStatus.Canceled))
                     {
-                        DateTime dueTime = context.CurrentUtcDateTime.AddMinutes(1);
-                        await context.CreateTimer(dueTime, CancellationToken.None);
-                        status = await context.CallActivityAsync<string>("SendApiWrapper_CheckStatus", notificationId);
+                       return SetReturnStatus(notificationItem);
                     }
-                    else
-                    {
-                        return new BadRequestObjectResult(new SentResponse() { NotificationId = notificationId, Status = $"Notification status = {status}" });
-                    }
-                    context.SetCustomStatus($"Notification status = {status}");
-
                 }
+
+                return SetReturnStatus(notificationItem);
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult(new SentResponse() { NotificationId = notificationId, Status = ex.Message });
+                return (new MessageResponse()
+                {
+                    NotificationId = notificationId,
+                    ErrorMessage = ex.Message
+                });
             }
-
-            return new OkObjectResult(new SentResponse() { NotificationId = notificationId });
         }
 
         [FunctionName("SendApiWrapper_Work")]
@@ -85,7 +83,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
         }
 
         [FunctionName("SendApiWrapper_CheckStatus")]
-        public async Task<string> Status_Function([ActivityTrigger] string notificationId, ILogger log)
+        public async Task<NotificationDataEntity> Status_Function([ActivityTrigger] string notificationId, ILogger log)
         {
             var notificationDataEntity = await _notificationDataRepository.GetAsync(
                 partitionKey: NotificationDataTableNames.SentNotificationsPartition,
@@ -94,7 +92,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
             if (notificationDataEntity == null)
                 throw new ArgumentNullException(nameof(notificationDataEntity));
 
-            return notificationDataEntity.Status;
+            return notificationDataEntity;
         }
 
         [FunctionName("SendApiWrapperFunction_HttpStart")]
@@ -170,12 +168,25 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
             var functionResp = JsonConvert.DeserializeObject<OrchestrationStatusResponse>(content);
             return functionResp.RuntimeStatus;
         }
+
+        private static MessageResponse SetReturnStatus(NotificationDataEntity notificationItem)
+        {
+            return (new MessageResponse()
+            {
+                NotificationId = notificationItem.Id,
+                Status = notificationItem.Status,
+                ErrorMessage = notificationItem.ErrorMessage,
+                WarningMessage = notificationItem.WarningMessage
+            });
+
+        }
     }
 }
 
-public class SentResponse
+public class MessageResponse
 {
     public string NotificationId { get; set; }
-
     public string Status { get; set; }
+    public string ErrorMessage { get; set; }
+    public string WarningMessage { get; set; }
 }
