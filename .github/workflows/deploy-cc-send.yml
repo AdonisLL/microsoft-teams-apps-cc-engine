@@ -2,10 +2,10 @@ name: Deploy CC Send Function
 
 on:
   workflow_dispatch:
-  inputs:
-   FUNCTION_APP_NAME: 
-    description: 'The name of the existing function app for deployment'
-    required: true
+   inputs:
+    FUNCTION_APP_NAME: 
+     description: 'The name of the existing function app for deployment'
+     required: true
     
 
 # CONFIGURATION
@@ -16,7 +16,6 @@ on:
 #
 # 2. Change these variables for your configuration:
 env:
-  AZURE_FUNCTIONAPP_NAME: 'cc-app75u4uijj2mhu4-function'  # set this to your application's name
   AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/CompanyCommunicator.Send.Func'    # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '3.1.*'              # set this to the dotnet version to use
   OUTPUT_PATH: ${{ github.workspace }}/.output
