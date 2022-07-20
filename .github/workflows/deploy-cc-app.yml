@@ -3,13 +3,14 @@ name: Deploy CC App
 on:
   # Allows you to run this workflow manually from the Actions tabapp-name
   workflow_dispatch:
-   # Allows you to run this workflow remotley from GitHub API 
-  repository_dispatch:
-    types: [deploy-api]
-    inputs:
+   inputs:
     APP_NAME: 
      description: 'The name of the existing function app for deployment'
      required: true
+   # Allows you to run this workflow remotley from GitHub API 
+  repository_dispatch:
+    types: [deploy-api]
+    
 
 # CONFIGURATION
 # For help, go to https://github.com/Azure/Actions
