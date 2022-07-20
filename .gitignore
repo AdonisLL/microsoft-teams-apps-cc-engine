@@ -11,6 +11,7 @@ local.settings.json
 *.userosscache
 *.sln.docstates
 /Properties/launchSettings.json
+/.history/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
