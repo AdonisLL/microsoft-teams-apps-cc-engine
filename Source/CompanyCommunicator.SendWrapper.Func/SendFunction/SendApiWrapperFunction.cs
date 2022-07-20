@@ -58,7 +58,9 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func
                     DateTime dueTime = context.CurrentUtcDateTime.AddMinutes(1);
                     await context.CreateTimer(dueTime, CancellationToken.None);
                     notificationItem = await context.CallActivityAsync<NotificationDataEntity>("SendApiWrapper_CheckStatus", notificationId);
-                    if(notificationItem.Status == nameof(NotificationStatus.Failed) || notificationItem.Status == nameof(NotificationStatus.Canceled))
+                    if(notificationItem.Status == nameof(NotificationStatus.Failed) || 
+                        notificationItem.Status == nameof(NotificationStatus.Canceled) ||
+                         notificationItem.Status == nameof(NotificationStatus.Sent))
                     {
                        return SetReturnStatus(notificationItem);
                     }
