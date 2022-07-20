@@ -1,11 +1,15 @@
 name: Deploy CC App
 
 on:
-  # Allows you to run this workflow manually from the Actions tab
+  # Allows you to run this workflow manually from the Actions tabapp-name
   workflow_dispatch:
    # Allows you to run this workflow remotley from GitHub API 
   repository_dispatch:
     types: [deploy-api]
+    inputs:
+    APP_NAME: 
+     description: 'The name of the existing function app for deployment'
+     required: true
 
 # CONFIGURATION
 # For help, go to https://github.com/Azure/Actions
@@ -77,5 +81,5 @@ jobs:
       - name: 'Run Azure webapp deploy action using publish profile credentials'
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: ${{ env.WEBSITE_NAME }} # Replace with your app name
+          app-name: ${{ github.event.inputs.APP_NAME }}
           package: ${{env.DOTNET_ROOT}}/ccapp
