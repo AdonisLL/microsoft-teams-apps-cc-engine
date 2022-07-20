@@ -65,4 +65,3 @@ jobs:
           with:
             app-name: ${{ github.event.inputs.FUNCTION_APP_NAME }}
             package:  ${{ env.OUTPUT_PATH }}
-
