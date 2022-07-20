@@ -6,11 +6,6 @@ on:
    # Allows you to run this workflow remotley from GitHub API 
   repository_dispatch:
     types: [deploy-api]
-    inputs:
-        # Change this value
-        APP_NAME:
-          description: 'Existing web app name to deploy to'
-          required: true
 
 # CONFIGURATION
 # For help, go to https://github.com/Azure/Actions
