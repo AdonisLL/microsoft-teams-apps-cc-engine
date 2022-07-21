@@ -175,7 +175,11 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
             memorystream.Position = 0;
             await blob.UploadAsync(memorystream, true);
             int blobSasTimeout = 24;
-            int.TryParse(_configuration.GetValue<string>("BlobSasTimeoutHours"), out blobSasTimeout);
+            int blobSasTimeoutConfig;
+            if(int.TryParse(_configuration.GetValue<string>("BlobSasTimeoutHours"), out blobSasTimeoutConfig)) 
+            {
+                blobSasTimeout = Convert.ToInt32(blobSasTimeoutConfig);
+            }
             var url = blob.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(blobSasTimeout)).ToString();
             return url;
         }

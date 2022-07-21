@@ -37,63 +37,10 @@
             _forceCompleteMessageDelayInSeconds = dataQueueMessageOptions.Value.ForceCompleteMessageDelayInSeconds;
         }
 
-        ///// <summary>
-        ///// Create a new draft notification.
-        ///// </summary>
-        ///// <param name="notificationRepository">The notification repository.</param>
-        ///// <param name="notification">Draft Notification model class instance passed in from Web API.</param>
-        ///// <param name="userName">Name of the user who is running the application.</param>
-        ///// <returns>The newly created notification's id.</returns>
-        //public async Task<string> CreateDraftNotificationAsync(
-        //    DraftNotification notification,
-        //    string userName)
-        //{
-        //    var newId = _notificationDataRepository.TableRowKeyGenerator.CreateNewKeyOrderingOldestToMostRecent();
-
-        //    var notificationEntity = new NotificationDataEntity
-        //    {
-        //        PartitionKey = NotificationDataTableNames.DraftNotificationsPartition,
-        //        RowKey = newId,
-        //        Id = newId,
-        //        AdaptiveCardContent = notification.AdaptiveCardContent,
-        //        ImageLink = notification.ImageLink,
-        //        Summary = notification.Summary,
-        //        Author = notification.Author,
-        //        ButtonTitle = notification.ButtonTitle,
-        //        ButtonLink = notification.ButtonLink,
-        //        CreatedBy = userName,
-        //        CreatedDate = DateTime.UtcNow,
-        //        IsDraft = true,
-        //        Teams = notification.Teams,
-        //        Rosters = notification.Rosters,
-        //        Groups = notification.Groups,
-        //        AllUsers = notification.AllUsers,
-        //        Title = notification.Title,
-        //    };
-
-        //    await _notificationDataRepository.CreateOrUpdateAsync(notificationEntity);
-        //    notification.Id = newId;
-        //    //await CreateSentNotification(notification);
-
-        //    return newId;
-        //}
-
+        
 
         public async Task<string> CreateSentNotification(DraftNotification notification, string userName)
         {
-
-            //if (draftNotification == null)
-            //{
-            //    throw new ArgumentNullException(nameof(draftNotification));
-            //}
-
-            //var draftNotificationDataEntity = await _notificationDataRepository.GetAsync(
-            //    NotificationDataTableNames.DraftNotificationsPartition,
-            //    draftNotification.Id);
-            //if (draftNotificationDataEntity == null)
-            //{
-            //    throw new Exception($"Draft notification, Id: {draftNotification.Id}, could not be found.");
-            //}
 
             var draftNotificationDataEntity = new NotificationDataEntity
             {
@@ -122,13 +69,11 @@
             // Ensure the data table needed by the Azure Functions to send the notifications exist in Azure storage.
             await _sentNotificationDataRepository.EnsureSentNotificationDataTableExistsAsync();
 
-            // Update user app id if proactive installation is enabled.
-            //await this.UpdateUserAppIdAsync();
-
             var prepareToSendQueueMessageContent = new PrepareToSendQueueMessageContent
             {
                 NotificationId = newSentNotificationId,
             };
+
             await _prepareToSendQueue.SendAsync(prepareToSendQueueMessageContent);
 
             // Send a "force complete" message to the data queue with a delay to ensure that
