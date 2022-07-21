@@ -150,6 +150,13 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
             await blobContainerClient.SetAccessPolicyAsync(PublicAccessType.None);
             var blob = blobContainerClient.GetBlobClient(fileName);
 
+            var notificationDataEntity = await _notificationDataRepository.GetAsync(
+               partitionKey: NotificationDataTableNames.SentNotificationsPartition,
+               rowKey: notificationId);
+
+            if (notificationDataEntity == null)
+                throw new ArgumentNullException(nameof(notificationDataEntity));
+
             using var memorystream = new MemoryStream();
             using (var archive = new ZipArchive(memorystream, ZipArchiveMode.Create, true))
             {
@@ -161,12 +168,25 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
                     using (var writer = new StreamWriter(entryStream, System.Text.Encoding.UTF8))
                     using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                     {
-                        var userDataMap = new UserDataMap(_localizer);
-                        csv.Configuration.RegisterClassMap(userDataMap);
-                        var userStream = _userDataStream.GetUserDataStreamAsync(notificationId, "Sent");
-                        await foreach (var data in userStream)
+                        if (notificationDataEntity.Teams.Any())
                         {
-                            await csv.WriteRecordsAsync(data);
+                            var teamDataMap = new TeamDataMap(_localizer);
+                            csv.Configuration.RegisterClassMap(teamDataMap);
+                            var teamDataStream = _userDataStream.GetTeamDataStreamAsync(notificationId, notificationDataEntity.Status);
+                            await foreach (var data in teamDataStream)
+                            {
+                                await csv.WriteRecordsAsync(data);
+                            }
+                        }
+                        else
+                        {
+                            var userDataMap = new UserDataMap(_localizer);
+                            csv.Configuration.RegisterClassMap(userDataMap);
+                            var userStream = _userDataStream.GetUserDataStreamAsync(notificationId, notificationDataEntity.Status);
+                            await foreach (var data in userStream)
+                            {
+                                await csv.WriteRecordsAsync(data);
+                            }
                         }
                     }
                 }

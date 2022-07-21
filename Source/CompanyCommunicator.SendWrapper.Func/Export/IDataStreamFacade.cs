@@ -14,5 +14,6 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
         /// <param name="notificationStatus">the notification status.</param>
         /// <returns>the streams of user data.</returns>
         IAsyncEnumerable<IEnumerable<UserData>> GetUserDataStreamAsync(string notificationId, string notificationStatus);
+        IAsyncEnumerable<IEnumerable<TeamData>> GetTeamDataStreamAsync(string notificationId, string notificationStatus);
     }
 }

@@ -32,6 +32,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
         private readonly IUserTypeService userTypeService;
         private readonly IUsersService usersService;
         private readonly IStringLocalizer<Strings> localizer;
+        private readonly ITeamDataRepository teamDataRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataStreamFacade"/> class.
@@ -55,6 +56,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
             this.userTypeService = userTypeService ?? throw new ArgumentNullException(nameof(userTypeService));
             this.usersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
             this.localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            this.teamDataRepository = teamDataRepository ?? throw new ArgumentNullException(nameof(teamDataRepository));
         }
 
         /// <inheritdoc/>
@@ -119,7 +121,34 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
             }
         }
 
-       
+        public async IAsyncEnumerable<IEnumerable<TeamData>> GetTeamDataStreamAsync(string notificationId, string notificationStatus)
+        {
+            _ = notificationId ?? throw new ArgumentNullException(nameof(notificationId));
+            _ = notificationStatus ?? throw new ArgumentNullException(nameof(notificationStatus));
+
+            var sentNotificationDataEntitiesStream = this.sentNotificationDataRepository.GetStreamsAsync(notificationId);
+            await foreach (var sentNotificationDataEntities in sentNotificationDataEntitiesStream)
+            {
+                var teamDataList = new List<TeamData>();
+                foreach (var sentNotificationDataEntity in sentNotificationDataEntities)
+                {
+                    var team = await this.teamDataRepository.GetAsync(TeamDataTableNames.TeamDataPartition, sentNotificationDataEntity.RowKey);
+                    var teamData = new TeamData
+                    {
+                        Id = sentNotificationDataEntity.RowKey,
+                        Name = team?.Name,
+                        DeliveryStatus = sentNotificationDataEntity.DeliveryStatus is null ? sentNotificationDataEntity.DeliveryStatus : this.localizer.GetString(sentNotificationDataEntity.DeliveryStatus),
+                        StatusReason = this.GetStatusReason(sentNotificationDataEntity.ErrorMessage, sentNotificationDataEntity.StatusCode, notificationStatus),
+                        Error = sentNotificationDataEntity.Exception,
+                    };
+                    teamDataList.Add(teamData);
+                }
+
+                yield return teamDataList;
+            }
+        }
+
+
 
         /// <summary>
         /// Create user data.
