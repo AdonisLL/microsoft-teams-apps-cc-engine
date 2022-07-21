@@ -180,7 +180,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
             {
                 blobSasTimeout = blobSasTimeoutConfig > 0 ? Convert.ToInt32(blobSasTimeoutConfig) : blobSasTimeout;
             }
-            var url = blob.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(blobSasTimeout)).ToString();
+            var url = blob.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.Now.AddHours(blobSasTimeout)).ToString();
             return url;
         }
 
