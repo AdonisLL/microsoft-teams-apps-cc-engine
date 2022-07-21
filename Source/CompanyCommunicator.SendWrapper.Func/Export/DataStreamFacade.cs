@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
+﻿namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Localization;
     using Microsoft.Graph;
     using Microsoft.Teams.Apps.CompanyCommunicator.Common.Extensions;
@@ -21,6 +12,11 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
     using Microsoft.Teams.Apps.CompanyCommunicator.Common.Services.User;
     using Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Models;
     using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Facade to get the data stream.
@@ -147,8 +143,6 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
                 yield return teamDataList;
             }
         }
-
-
 
         /// <summary>
         /// Create user data.

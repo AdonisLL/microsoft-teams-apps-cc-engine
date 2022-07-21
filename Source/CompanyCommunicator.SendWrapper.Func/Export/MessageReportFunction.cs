@@ -16,7 +16,6 @@ using Microsoft.Teams.Apps.CompanyCommunicator.Common.Resources;
 using Microsoft.Teams.Apps.CompanyCommunicator.Common.Services.MicrosoftGraph;
 using Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Mappers;
 using Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Models;
-using Newtonsoft.Json;
 using System;
 using System.Globalization;
 using System.IO;
@@ -35,9 +34,6 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
         private INotificationDataRepository _notificationDataRepository;
         private readonly ITeamDataRepository _teamDataRepository;
         private readonly IGroupsService _groupsService;
-
-
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UploadActivity"/> class.
@@ -75,19 +71,19 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
                 string notificationId = req.Query["notificationId"];
                 string reportLink = await this.GetNotificationReport(notificationId, log);
 
-               var notificationEntity = await _notificationDataRepository.GetAsync(
-               partitionKey: NotificationDataTableNames.SentNotificationsPartition,
-               rowKey:notificationId);
+                var notificationEntity = await _notificationDataRepository.GetAsync(
+                partitionKey: NotificationDataTableNames.SentNotificationsPartition,
+                rowKey: notificationId);
 
-              if (notificationEntity == null)
-              {
-                return new NotFoundResult();
-              }
+                if (notificationEntity == null)
+                {
+                    return new NotFoundResult();
+                }
 
-               var groupNames = await _groupsService.
-               GetByIdsAsync(notificationEntity.Groups).
-               Select(x => x.DisplayName).
-               ToListAsync();
+                var groupNames = await _groupsService.
+                GetByIdsAsync(notificationEntity.Groups).
+                Select(x => x.DisplayName).
+                ToListAsync();
 
                 var result = new SentNotification
                 {
@@ -111,13 +107,12 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
                     SendingStartedDate = notificationEntity.SendingStartedDate,
                     ErrorMessage = notificationEntity.ErrorMessage,
                     WarningMessage = notificationEntity.WarningMessage,
-                    CanDownload =  true,
+                    CanDownload = true,
                     SendingCompleted = notificationEntity.IsCompleted(),
                     ReportDownloadUrl = reportLink,
                     Duration = (TimeSpan)(notificationEntity.SentDate - notificationEntity.SendingStartedDate),
                     TotalMessageCount = notificationEntity.TotalMessageCount
                 };
-
 
                 if (notificationId == null)
                 {
@@ -126,7 +121,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
 
                 return new OkObjectResult(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.LogError(ex.Message);
                 return BadRequestObjectResult(ex);
@@ -196,7 +191,7 @@ namespace Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.Export
             await blob.UploadAsync(memorystream, true);
             int blobSasTimeout = 24;
             int blobSasTimeoutConfig;
-            if(int.TryParse(_configuration.GetValue<string>("BlobSasTimeoutHours"), out blobSasTimeoutConfig)) 
+            if (int.TryParse(_configuration.GetValue<string>("BlobSasTimeoutHours"), out blobSasTimeoutConfig))
             {
                 blobSasTimeout = blobSasTimeoutConfig > 0 ? Convert.ToInt32(blobSasTimeoutConfig) : blobSasTimeout;
             }
