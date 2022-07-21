@@ -1,34 +1,34 @@
 {
   "subscriptionId": {
-    "Value": "<<value>>",
+    "Value": "a0e7630f-abb4-45e0-b815-b86fde1df455",
     "Description": "Azure Subscription ID. All resources in an Azure subscription are billed together."
   },
   "subscriptionTenantId": {
-    "Value": "<<value>>",
+    "Value": "1462a2c6-16fe-4a38-845c-7b83405ee26f",
     "Description": "Id of the tenant to deploy to (If you are not sure how to get Tenant ID, please check Azure Active Directory in Azure Portal. Under Manage, click Properties. The tenant ID is shown in the Directory ID box). e.g 98f3ece2-3a5a-428b-aa4f-4c41b3f6eef0. Tenant ID is also in the \"Overview\" section\""
   },
   "UserObjectId": {
-    "Value": "<<value>>",
+    "Value": "7527ced4-6760-4913-aa8e-9f4e97e1972b",
     "Description": "User Object Id."
   },
   "resourceGroupName": {
-    "Value": "<<value>>",
+    "Value": "rg-company-communicator",
     "Description": "Resource Group"
   },
   "region": {
-    "Value": "<<value>>",
+    "Value": "east us",
     "Description": "The Azure region that's right for you and your customers. Not every resource is available in every region."
   },
   "baseResourceName": {
-    "Value": "<<value>>",
+    "Value": "ccapiresource",
     "Description": "The base name to use for the resources that will be provisioned."
   },
   "tenantId": {
-    "Value": "<<value>>",
+    "Value": "1462a2c6-16fe-4a38-845c-7b83405ee26f",
     "Description": "Tenant Id where the teams application will be installed. If the Azure subscription is in the same tenant, update with \"subscriptionTenantId\" parameter value."
   },
   "senderUPNList": {
-    "Value": "<<value>>",
+    "Value": "AdonisLL@adonisdev1.onmicrosoft.com",
     "Description": "Semicolon-delimited list of the user principal names (UPNs) allowed to send messages."
   },
   "useCertificate": {
@@ -71,6 +71,10 @@
     "Value": "ce6ca916-08e9-4639-bfbe-9d098baf42ca",
     "Description": "A GUID used to identify the role assignment. This is Default value."
   },
+  "serviceBusApiSendFuncRoleNameGuid": {
+    "Value": "83d662f7-e73e-491a-b3d9-2c08631CBee9",
+    "Description": "A GUID used to identify the role assignment. This is Default value."
+  },
   "serviceBusSendFuncRoleNameGuid": {
     "Value": "960365a2-c7bf-4ff3-8887-efa86fe4a163",
     "Description": "A GUID used to identify the role assignment. This is Default value."
@@ -85,6 +89,10 @@
   },
   "storageAccountPrepFuncRoleNameGuid": {
     "Value": "9332a9e9-93f4-48d9-8121-d279f30a732e",
+    "Description": "A GUID used to identify the role assignment. This is Default value."
+  },
+  "storageAccountApiSendFuncRoleNameGuid": {
+    "Value": "3755a7b5-7df4-43f2-8800-5a1b4005be76",
     "Description": "A GUID used to identify the role assignment. This is Default value."
   },
   "storageAccountDataFuncRoleNameGuid": {
@@ -108,7 +116,7 @@
     "Description": "The size of the hosting plan (small - 1, medium - 2, or large - 3). Default value: 1"
   },
   "gitRepoUrl": {
-    "Value": "https://github.com/OfficeDev/microsoft-teams-company-communicator-app.git",
+    "Value": "https://github.com/AdonisLL/microsoft-teams-apps-cc-engine",
     "Description": "The URL to the GitHub repository to deploy."
   },
   "gitBranch": {
@@ -128,27 +136,19 @@
     "Description": "The link to the icon for the app. It must resolve to a PNG file."
   },
   "companyName": {
-    "Value": "<<value>>",
+    "Value": "Contoso",
     "Description": "The display name for the company."
   },
   "websiteUrl": {
-    "Value": "<<value>>",
+    "Value": "https://www.google.com",
     "Description": "The https:// URL to the company's website. This link should take users to your company or product-specific landing page."
   },
   "privacyUrl": {
-    "Value": "<<value>>",
+    "Value": "https://www.google.com",
     "Description": "The https:// URL to the company's privacy policy."
   },
   "termsOfUseUrl": {
-    "Value": "<<value>>",
+    "Value": "https://www.google.com",
     "Description": "The https:// URL to the company's terms of use."
-  },
-  "storageAccountApiSendFuncRoleNameGuid": {
-    "Value": "3755a7b5-7df4-43f2-8800-5a1b4005be76",
-    "Description": "A GUID used to identify the role assignment. This is Default value."
-  },
-  "serviceBusApiSendFuncRoleNameGuid": {
-    "Value": "83d662f7-e73e-491a-b3d9-2c08631CBee9",
-    "Description": "A GUID used to identify the role assignment. This is Default value."
   }
 }

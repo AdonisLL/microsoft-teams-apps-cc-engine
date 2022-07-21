@@ -311,7 +311,9 @@ function CreateAzureADApp {
             if ($updateDecision -eq 0) {
                 WriteI -message "Updating the existing app..."
 
-                az ad app update --id $app.appId --available-to-other-tenants $MultiTenant --oauth2-allow-implicit-flow $AllowImplicitFlow
+                #az ad app update --id $app.appId --available-to-other-tenants $MultiTenant --oauth2-allow-implicit-flow $AllowImplicitFlow
+                az ad app update --id $app.appId --sign-in-audience AzureADMultipleOrgs --enable-access-token-issuance $true
+
 
                 WriteI -message "Waiting for app update to finish..."
 
@@ -325,8 +327,8 @@ function CreateAzureADApp {
         } else {
             # Create Azure AD app registration using CLI
             #az ad app create --display-name $appName --available-to-other-tenants $MultiTenant --oauth2-allow-implicit-flow $AllowImplicitFlow
+            az ad app create --display-name $appName --sign-in-audience AzureADMultipleOrgs --enable-access-token-issuance $true
 
-            az ad app create --display-name $appName --sign-in-audience AzureADMultipleOrgs --enable-access-token-issuance $true --enable-id-token-issuance  $true
 
             WriteI -message "Waiting for app creation to finish..."
 
@@ -507,7 +509,7 @@ function DeployARMTemplate {
             $armDeploymentResult = az deployment group create --resource-group $parameters.resourceGroupName.Value --subscription $parameters.subscriptionId.Value --template-file 'azuredeploywithcert.json' --parameters "baseResourceName=$($parameters.baseResourceName.Value)" "authorClientId=$authorappId" "authorAppCertName=$($parameters.authorAppCertName.Value)" "graphAppId=$graphappid" "graphAppCertName=$($parameters.graphAppCertName.Value)" "userClientId=$userappId" "userAppCertName=$($parameters.userAppCertName.Value)" "senderUPNList=$($parameters.senderUPNList.Value)" "customDomainOption=$($parameters.customDomainOption.Value)" "appDisplayName=$($parameters.appDisplayName.Value)" "appDescription=$($parameters.appDescription.Value)" "appIconUrl=$($parameters.appIconUrl.Value)" "tenantId=$($parameters.tenantId.Value)" "hostingPlanSku=$($parameters.hostingPlanSku.Value)" "hostingPlanSize=$($parameters.hostingPlanSize.Value)" "location=$($parameters.region.Value)" "gitRepoUrl=$($parameters.gitRepoUrl.Value)" "gitBranch=$($parameters.gitBranch.Value)" "ProactivelyInstallUserApp=$($parameters.proactivelyInstallUserApp.Value)" "objectId=$($parameters.UserObjectId.Value)" "UserAppExternalId=$($parameters.userAppExternalId.Value)" "DefaultCulture=$($parameters.defaultCulture.Value)" "SupportedCultures=$($parameters.supportedCultures.Value)" "serviceBusWebAppRoleNameGuid=$($parameters.serviceBusWebAppRoleNameGuid.Value)" "serviceBusPrepFuncRoleNameGuid=$($parameters.serviceBusPrepFuncRoleNameGuid.Value)" "serviceBusApiSendFuncRoleNameGuid=$($parameters.serviceBusApiSendFuncRoleNameGuid.Value)" "serviceBusSendFuncRoleNameGuid=$($parameters.serviceBusSendFuncRoleNameGuid.Value)" "serviceBusDataFuncRoleNameGuid=$($parameters.serviceBusDataFuncRoleNameGuid.Value)" "storageAccountWebAppRoleNameGuid=$($parameters.storageAccountWebAppRoleNameGuid.Value)" "storageAccountPrepFuncRoleNameGuid=$($parameters.storageAccountPrepFuncRoleNameGuid.Value)" "storageAccountApiSendFuncRoleNameGuid=$($parameters.storageAccountApiSendFuncRoleNameGuid.Value)" "storageAccountDataFuncRoleNameGuid=$($parameters.storageAccountDataFuncRoleNameGuid.Value)" 
         }
         else{
-            $armDeploymentResult = az deployment group create --resource-group $parameters.resourceGroupName.Value --subscription $parameters.subscriptionId.Value --template-file 'azuredeploy.json' --parameters "baseResourceName=$($parameters.baseResourceName.Value)" "authorClientId=$authorappId" "authorClientSecret=$authorsecret" "graphAppId=$graphappid" "graphAppSecret=$graphappsecret" "userClientId=$userappId" "userClientSecret=$usersecret" "senderUPNList=$($parameters.senderUPNList.Value)" "customDomainOption=$($parameters.customDomainOption.Value)" "appDisplayName=$($parameters.appDisplayName.Value)" "appDescription=$($parameters.appDescription.Value)" "appIconUrl=$($parameters.appIconUrl.Value)" "tenantId=$($parameters.tenantId.Value)" "hostingPlanSku=$($parameters.hostingPlanSku.Value)" "hostingPlanSize=$($parameters.hostingPlanSize.Value)" "location=$($parameters.region.Value)" "gitRepoUrl=$($parameters.gitRepoUrl.Value)" "gitBranch=$($parameters.gitBranch.Value)" "ProactivelyInstallUserApp=$($parameters.proactivelyInstallUserApp.Value)" "UserAppExternalId=$($parameters.userAppExternalId.Value)" "DefaultCulture=$($parameters.defaultCulture.Value)" "SupportedCultures=$($parameters.supportedCultures.Value)"  "serviceBusWebAppRoleNameGuid=$($parameters.serviceBusWebAppRoleNameGuid.Value)" "serviceBusPrepFuncRoleNameGuid=$($parameters.serviceBusPrepFuncRoleNameGuid.Value)" "serviceBusSendFuncRoleNameGuid=$($parameters.serviceBusSendFuncRoleNameGuid.Value)" "serviceBusApiSendFuncRoleNameGuid=$($parameters.serviceBusApiSendFuncRoleNameGuid.Value)" "storageAccountApiSendFuncRoleNameGuid=$($parameters.storageAccountApiSendFuncRoleNameGuid.Value)" "serviceBusDataFuncRoleNameGuid=$($parameters.serviceBusDataFuncRoleNameGuid.Value)" "storageAccountWebAppRoleNameGuid=$($parameters.storageAccountWebAppRoleNameGuid.Value)" "storageAccountPrepFuncRoleNameGuid=$($parameters.storageAccountPrepFuncRoleNameGuid.Value)" "storageAccountDataFuncRoleNameGuid=$($parameters.storageAccountDataFuncRoleNameGuid.Value)" 
+            $armDeploymentResult = az deployment group create --resource-group $parameters.resourceGroupName.Value --subscription $parameters.subscriptionId.Value --template-file 'azuredeployzip.json' --parameters "baseResourceName=$($parameters.baseResourceName.Value)" "authorClientId=$authorappId" "authorClientSecret=$authorsecret" "graphAppId=$graphappid" "graphAppSecret=$graphappsecret" "userClientId=$userappId" "userClientSecret=$usersecret" "senderUPNList=$($parameters.senderUPNList.Value)" "customDomainOption=$($parameters.customDomainOption.Value)" "appDisplayName=$($parameters.appDisplayName.Value)" "appDescription=$($parameters.appDescription.Value)" "appIconUrl=$($parameters.appIconUrl.Value)" "tenantId=$($parameters.tenantId.Value)" "hostingPlanSku=$($parameters.hostingPlanSku.Value)" "hostingPlanSize=$($parameters.hostingPlanSize.Value)" "location=$($parameters.region.Value)" "gitRepoUrl=$($parameters.gitRepoUrl.Value)" "gitBranch=$($parameters.gitBranch.Value)" "ProactivelyInstallUserApp=$($parameters.proactivelyInstallUserApp.Value)" "UserAppExternalId=$($parameters.userAppExternalId.Value)" "DefaultCulture=$($parameters.defaultCulture.Value)" "SupportedCultures=$($parameters.supportedCultures.Value)"  "serviceBusWebAppRoleNameGuid=$($parameters.serviceBusWebAppRoleNameGuid.Value)" "serviceBusPrepFuncRoleNameGuid=$($parameters.serviceBusPrepFuncRoleNameGuid.Value)" "serviceBusSendFuncRoleNameGuid=$($parameters.serviceBusSendFuncRoleNameGuid.Value)" "serviceBusApiSendFuncRoleNameGuid=$($parameters.serviceBusApiSendFuncRoleNameGuid.Value)" "storageAccountApiSendFuncRoleNameGuid=$($parameters.storageAccountApiSendFuncRoleNameGuid.Value)" "serviceBusDataFuncRoleNameGuid=$($parameters.serviceBusDataFuncRoleNameGuid.Value)" "storageAccountWebAppRoleNameGuid=$($parameters.storageAccountWebAppRoleNameGuid.Value)" "storageAccountPrepFuncRoleNameGuid=$($parameters.storageAccountPrepFuncRoleNameGuid.Value)" "storageAccountDataFuncRoleNameGuid=$($parameters.storageAccountDataFuncRoleNameGuid.Value)" 
         }
 
         $deploymentExceptionMessage = "ERROR: ARM template deployment error."
@@ -527,7 +529,7 @@ function DeployARMTemplate {
                         $armDeploymentResult = az deployment group create --resource-group $parameters.resourceGroupName.Value --subscription $parameters.subscriptionId.Value --template-file 'azuredeploywithcert.json' --parameters "baseResourceName=$($parameters.baseResourceName.Value)" "authorClientId=$authorappId" "authorAppCertName=$($parameters.authorAppCertName.Value)" "graphAppId=$graphappid" "graphAppCertName=$($parameters.graphAppCertName.Value)" "userClientId=$userappId" "userAppCertName=$($parameters.userAppCertName.Value)" "senderUPNList=$($parameters.senderUPNList.Value)" "customDomainOption=$($parameters.customDomainOption.Value)" "appDisplayName=$($parameters.appDisplayName.Value)" "appDescription=$($parameters.appDescription.Value)" "appIconUrl=$($parameters.appIconUrl.Value)" "tenantId=$($parameters.tenantId.Value)" "hostingPlanSku=$($parameters.hostingPlanSku.Value)" "hostingPlanSize=$($parameters.hostingPlanSize.Value)" "location=$($parameters.region.Value)" "gitRepoUrl=$($parameters.gitRepoUrl.Value)" "gitBranch=$($parameters.gitBranch.Value)" "ProactivelyInstallUserApp=$($parameters.proactivelyInstallUserApp.Value)" "objectId=$($parameters.UserObjectId.Value)" "UserAppExternalId=$($parameters.userAppExternalId.Value)" "DefaultCulture=$($parameters.defaultCulture.Value)" "SupportedCultures=$($parameters.supportedCultures.Value)"  "serviceBusWebAppRoleNameGuid=$($parameters.serviceBusWebAppRoleNameGuid.Value)" "serviceBusPrepFuncRoleNameGuid=$($parameters.serviceBusPrepFuncRoleNameGuid.Value)" "serviceBusSendFuncRoleNameGuid=$($parameters.serviceBusSendFuncRoleNameGuid.Value)" "serviceBusDataFuncRoleNameGuid=$($parameters.serviceBusDataFuncRoleNameGuid.Value)" "storageAccountWebAppRoleNameGuid=$($parameters.storageAccountWebAppRoleNameGuid.Value)" "storageAccountPrepFuncRoleNameGuid=$($parameters.storageAccountPrepFuncRoleNameGuid.Value)" "storageAccountDataFuncRoleNameGuid=$($parameters.storageAccountDataFuncRoleNameGuid.Value)   "serviceBusApiSendFuncRoleNameGuid=$($parameters.serviceBusApiSendFuncRoleNameGuid.Value)" "storageAccountApiSendFuncRoleNameGuid=$($parameters.storageAccountApiSendFuncRoleNameGuid.Value)"" 
                     }
                     else{
-                        $armDeploymentResult = az deployment group create --resource-group $parameters.resourceGroupName.Value --subscription $parameters.subscriptionId.Value --template-file 'azuredeploy.json' --parameters "baseResourceName=$($parameters.baseResourceName.Value)" "authorClientId=$authorappId" "authorClientSecret=$authorsecret" "graphAppId=$graphappid" "graphAppSecret=$graphappsecret" "userClientId=$userappId" "userClientSecret=$usersecret" "senderUPNList=$($parameters.senderUPNList.Value)" "customDomainOption=$($parameters.customDomainOption.Value)" "appDisplayName=$($parameters.appDisplayName.Value)" "appDescription=$($parameters.appDescription.Value)" "appIconUrl=$($parameters.appIconUrl.Value)" "tenantId=$($parameters.tenantId.Value)" "hostingPlanSku=$($parameters.hostingPlanSku.Value)" "hostingPlanSize=$($parameters.hostingPlanSize.Value)" "location=$($parameters.region.Value)" "gitRepoUrl=$($parameters.gitRepoUrl.Value)" "gitBranch=$($parameters.gitBranch.Value)" "ProactivelyInstallUserApp=$($parameters.proactivelyInstallUserApp.Value)" "UserAppExternalId=$($parameters.userAppExternalId.Value)" "DefaultCulture=$($parameters.defaultCulture.Value)" "SupportedCultures=$($parameters.supportedCultures.Value)"  "serviceBusWebAppRoleNameGuid=$($parameters.serviceBusWebAppRoleNameGuid.Value)" "serviceBusPrepFuncRoleNameGuid=$($parameters.serviceBusPrepFuncRoleNameGuid.Value)" "serviceBusSendFuncRoleNameGuid=$($parameters.serviceBusSendFuncRoleNameGuid.Value)" "serviceBusDataFuncRoleNameGuid=$($parameters.serviceBusDataFuncRoleNameGuid.Value)" "storageAccountWebAppRoleNameGuid=$($parameters.storageAccountWebAppRoleNameGuid.Value)" "storageAccountPrepFuncRoleNameGuid=$($parameters.storageAccountPrepFuncRoleNameGuid.Value)" "storageAccountDataFuncRoleNameGuid=$($parameters.storageAccountDataFuncRoleNameGuid.Value) "serviceBusApiSendFuncRoleNameGuid=$($parameters.serviceBusApiSendFuncRoleNameGuid.Value)" "storageAccountApiSendFuncRoleNameGuid=$($parameters.storageAccountApiSendFuncRoleNameGuid.Value)"" 
+                        $armDeploymentResult = az deployment group create --resource-group $parameters.resourceGroupName.Value --subscription $parameters.subscriptionId.Value --template-file 'azuredeployzip.json' --parameters "baseResourceName=$($parameters.baseResourceName.Value)" "authorClientId=$authorappId" "authorClientSecret=$authorsecret" "graphAppId=$graphappid" "graphAppSecret=$graphappsecret" "userClientId=$userappId" "userClientSecret=$usersecret" "senderUPNList=$($parameters.senderUPNList.Value)" "customDomainOption=$($parameters.customDomainOption.Value)" "appDisplayName=$($parameters.appDisplayName.Value)" "appDescription=$($parameters.appDescription.Value)" "appIconUrl=$($parameters.appIconUrl.Value)" "tenantId=$($parameters.tenantId.Value)" "hostingPlanSku=$($parameters.hostingPlanSku.Value)" "hostingPlanSize=$($parameters.hostingPlanSize.Value)" "location=$($parameters.region.Value)" "gitRepoUrl=$($parameters.gitRepoUrl.Value)" "gitBranch=$($parameters.gitBranch.Value)" "ProactivelyInstallUserApp=$($parameters.proactivelyInstallUserApp.Value)" "UserAppExternalId=$($parameters.userAppExternalId.Value)" "DefaultCulture=$($parameters.defaultCulture.Value)" "SupportedCultures=$($parameters.supportedCultures.Value)"  "serviceBusWebAppRoleNameGuid=$($parameters.serviceBusWebAppRoleNameGuid.Value)" "serviceBusPrepFuncRoleNameGuid=$($parameters.serviceBusPrepFuncRoleNameGuid.Value)" "serviceBusSendFuncRoleNameGuid=$($parameters.serviceBusSendFuncRoleNameGuid.Value)" "serviceBusDataFuncRoleNameGuid=$($parameters.serviceBusDataFuncRoleNameGuid.Value)" "storageAccountWebAppRoleNameGuid=$($parameters.storageAccountWebAppRoleNameGuid.Value)" "storageAccountPrepFuncRoleNameGuid=$($parameters.storageAccountPrepFuncRoleNameGuid.Value)" "storageAccountDataFuncRoleNameGuid=$($parameters.storageAccountDataFuncRoleNameGuid.Value) "serviceBusApiSendFuncRoleNameGuid=$($parameters.serviceBusApiSendFuncRoleNameGuid.Value)" "storageAccountApiSendFuncRoleNameGuid=$($parameters.storageAccountApiSendFuncRoleNameGuid.Value)"" 
                     }
                 } else{
                     CollectARMDeploymentLogs
@@ -559,7 +561,7 @@ function DeployARMTemplate {
         }
         else
         {
-            $deploymentOutput = az deployment group show --name azuredeploy --resource-group $parameters.resourceGroupName.Value --subscription $parameters.subscriptionId.Value | ConvertFrom-Json
+            $deploymentOutput = az deployment group show --name azuredeployzip --resource-group $parameters.resourceGroupName.Value --subscription $parameters.subscriptionId.Value | ConvertFrom-Json
         }
         
         # Sync only in upgrades & if no source branch conflict detected
@@ -725,6 +727,8 @@ function ADAppUpdate {
 
     # Grant Admin consent
     GrantAdminConsent $configAppId
+
+    Connect-AzureAD
     
     # set subscription
     az account set --subscription $parameters.subscriptionId.Value
@@ -732,11 +736,8 @@ function ADAppUpdate {
     # Assigning graph permissions  
     az ad app update --id $configAppId --required-resource-accesses './AadAppManifest.json'    
 
-    Write-Host "Connect Azure"
     Import-Module AzureAD
-    ##Connect-AzureAD -AadAccessToken $aadToken -AccountId $context.Account.Id -TenantId $context.tenant.id -ErrorAction Stop
-    Connect-AzureAd
-    
+
     $apps = Get-AzureADApplication -Filter "DisplayName eq '$appName'"
 
     if (0 -eq $apps.Length) {
@@ -747,6 +748,7 @@ function ADAppUpdate {
 
     $applicationObjectId = $app.ObjectId
 
+    
     $app = Get-AzureADMSApplication -ObjectId $applicationObjectId
 
     # Do nothing if the app has already been configured
@@ -757,11 +759,12 @@ function ADAppUpdate {
     WriteI -message "`nUpdating graph app..."
 
     #Removing default scope user_impersonation
-    $DEFAULT_SCOPE=$(az ad app show --id $configAppId | jq '.oauth2Permissions[0].isEnabled = false' | jq -r '.oauth2Permissions')
-    $DEFAULT_SCOPE>>scope.json
-    az ad app update --id $configAppId --set oauth2Permissions=@scope.json
-    Remove-Item .\scope.json
-    az ad app update --id $configAppId --remove oauth2Permissions
+    #--scope no longer defaults to user_impersonation and is now required
+    #$DEFAULT_SCOPE=$(az ad app show --id $configAppId | jq '.oauth2Permissions[0].isEnabled = false' | jq -r '.oauth2Permissions')
+    #$DEFAULT_SCOPE>>scope.json
+    #az ad app update --id $configAppId --set oauth2Permissions=@scope.json
+    #Remove-Item .\scope.json
+    #az ad app update --id $configAppId --remove oauth2Permissions
     
     #Re-assign app detail after removing default scope user_impersonation
     $apps = Get-AzureADApplication -Filter "DisplayName eq '$appName'"
@@ -780,10 +783,11 @@ function ADAppUpdate {
     $appId = $app.AppId
 
     az ad app update --id $configAppId --identifier-uris $IdentifierUris
-    WriteI -message "App URI set"        
+    WriteI -message "App URI set config-appid: $configAppId, identifier-uris: $IdentifierUris"        
             
-    $configApp = az ad app update --id $configAppId --reply-urls $RedirectUris
-    WriteI -message "App reply-urls set"  
+    #az ad app update --id $configAppId --reply-urls $RedirectUris
+    az ad app update --id $configAppId --web-redirect-uris $RedirectUris
+    WriteI -message "App reply-urls set config-appid: $configAppId, redirect-urls: $RedirectUris"  
             
     az ad app update --id $configAppId --optional-claims './AadOptionalClaims.json'
     WriteI -message "App optionalclaim set."
@@ -933,6 +937,74 @@ function GenerateAppManifestPackage {
 function logout {
     $logOut = az logout
     $disAzAcc = Disconnect-AzAccount
+}
+
+function publish{
+    param(
+        $projectName, $projectPath    
+    )
+
+    #$projectPath="src/$($projectName)/$($projectName).csproj"
+    $publishDestPath="./publish/" + [guid]::NewGuid().ToString()
+
+    log "publishing project '$($projectName)' in folder '$($publishDestPath)' ..." 
+    dotnet publish $projectPath -c Release -o $publishDestPath
+    $zipArchiveFullPath="$($publishDestPath).Zip"
+    log "creating zip archive '$($zipArchiveFullPath)'"
+    $compress = @{
+        Path = $publishDestPath + "/*"
+        CompressionLevel = "Fastest"
+        DestinationPath = $zipArchiveFullPath
+    }
+    Compress-Archive @compress
+
+    log "cleaning up ..."
+    Remove-Item -path "$($publishDestPath)" -recurse
+
+    return $zipArchiveFullPath
+}
+
+function log{
+    param(
+        $text
+    )
+    write-host $text -ForegroundColor Yellow -BackgroundColor DarkGreen
+}
+
+function deploy{
+    param(
+        $zipArchiveFullPath,
+        $subscription,
+        $resourceGroup,        
+        $appName
+    )    
+
+    log "deploying '$($appName)' to Resource Group '$($resourceGroup)' in Subscription '$($subscription)' from zip '$($zipArchiveFullPath)' ..."
+    log "The command is constructed as '$($resourceGroup)' -n '$($appName)' --src '$($zipArchiveFullPath)'"
+    az functionapp deployment source config-zip -g "$($resourceGroup)" -n "$($appName)" --src "$($zipArchiveFullPath)" ##--subscription "$($subscription)"  
+    
+}
+
+function createArtifact {
+    param(
+        $appName,  $projectPath   
+    )
+    $zipPath = publish $appName  $projectPath   
+    if ($zipPath -is [array]) {
+        $zipPath = $zipPath[$zipPath.Length - 1]
+    }
+    return $zipPath
+}
+
+function deployInstance {
+    param(      
+        $zipPath,  
+        $subscription,
+        $resourceGroup,        
+        $appName
+    )
+
+    deploy $zipPath $subscription $resourceGroup $appName
 }
 
 # ---------------------------------------------------------
@@ -1171,7 +1243,23 @@ function logout {
         WriteE -message "Encountered an error during ARM template deployment. Exiting..."
         logout
         Exit
-    }    
+    } 
+    else {
+        $zipPath = createArtifact $deploymentOutput.properties.Outputs.apiSendFunctionAppName.Value "..\Source\CompanyCommunicator.SendWrapper.Func\Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj"
+        deployInstance $zipPath "" $parameters.resourceGroupName.Value $deploymentOutput.properties.Outputs.apiSendFunctionAppName.Value
+
+        $zipPath = createArtifact $deploymentOutput.properties.Outputs.botAppName.Value "..\Source\CompanyCommunicator\Microsoft.Teams.Apps.CompanyCommunicator.csproj"
+        deployInstance $zipPath "" $parameters.resourceGroupName.Value $deploymentOutput.properties.Outputs.botAppName.Value
+
+        $zipPath = createArtifact $deploymentOutput.properties.Outputs.prepFunctionAppName.Value "..\Source\CompanyCommunicator.Prep.Func\Microsoft.Teams.Apps.CompanyCommunicator.Prep.Func.csproj"
+        deployInstance $zipPath "" $parameters.resourceGroupName.Value $deploymentOutput.properties.Outputs.prepFunctionAppName.Value
+
+        $zipPath = createArtifact $deploymentOutput.properties.Outputs.sendFunctionAppName.Value "..\Source\CompanyCommunicator.Send.Func\Microsoft.Teams.Apps.CompanyCommunicator.Send.Func.csproj"
+        deployInstance $zipPath "" $parameters.resourceGroupName.Value $deploymentOutput.properties.Outputs.sendFunctionAppName.Value
+
+        $zipPath = createArtifact $deploymentOutput.properties.Outputs.dataFunctionAppName.Value "..\Source\CompanyCommunicator.Data.Func\Microsoft.Teams.Apps.CompanyCommunicator.Data.Func.csproj"
+        deployInstance $zipPath "" $parameters.resourceGroupName.Value $deploymentOutput.properties.Outputs.dataFunctionAppName.Value
+    }
 
 # Function call to update reply-urls and uris for registered app.
     WriteI -message "Updating required parameters and urls..."

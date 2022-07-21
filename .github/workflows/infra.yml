@@ -259,7 +259,7 @@ jobs:
       needs: build-infra
       env: 
         AZURE_FUNCTIONAPP_NAME: ${{ needs.build-infra.outputs.apiSendFunctionAppName }}
-        AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func' 
+        AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/CompanyCommunicator.SendWrapper.Func' 
 
       steps:
       - name: 'Checkout GitHub Action'
@@ -271,7 +271,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish Functions
-        run: dotnet publish ./Source/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/apiSendFunctionApp
+        run: dotnet publish ./Source/CompanyCommunicator.SendWrapper.Func/Microsoft.Teams.Apps.CompanyCommunicator.SendWrapper.Func.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/apiSendFunctionApp
 
       - name: "Login via Azure CLI"
         uses: azure/login@v1
