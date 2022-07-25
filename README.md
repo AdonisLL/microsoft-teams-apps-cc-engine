@@ -275,6 +275,15 @@ Unzip the downloaded file and open the manifest (JSON)
   }],
 ```
 
+**Add app permissions** to send notifications to team members
+
+```JSON
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],   
+```
+
 Also **update the list of validDomains** to add the `%appDomain%` from the [deployment Company Communicator](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator/wiki/Deployment-guide) - e.g. appName.azurefd.net
 ```JSON
   "validDomains": [
