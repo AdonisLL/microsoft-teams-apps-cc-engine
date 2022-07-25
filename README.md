@@ -247,6 +247,59 @@ base64ToBinary(body('HTTP_GET_-_Download_ZIP_file')?['$content'])
 </p>
 
 
+## Add the Company Communicator bot capability to your Power App
+
+Now that we have the CC API deployed and tested, we may want to add this capability to an existing Power App. All you need to do is to update your Power App manifest to add CC API bot capability.
+
+### Step 1 - Download your Power App manifest
+
+From the Power Platform portal - https://make.powerapps.com - select your Power App (under "Apps") and click on "Add to Teams" - Last, select "Download app" to get a ZIP file (aka app package) that contains the app manifest (JSON file) and 2 icons (PNG files)
+
+More info on this page - https://docs.microsoft.com/en-us/power-apps/teams/embed-teams-app
+
+### Step 2 - Update your app manifest 
+
+Unzip the downloaded file and open the manifest (JSON)
+
+**Add the bot capability** - Insert the following section in the manifest - Replace `<<user_botId>>` with the `%userBotId%` from the [deployment Company Communicator](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator/wiki/Deployment-guide)
+
+```JSON
+  "bots": [{
+    "botId": "<<user_botId>>",
+    "scopes": [
+      "personal",
+      "team"
+    ],
+    "supportsFiles": false,
+    "isNotificationOnly": true
+  }],
+```
+
+Also **update the list of validDomains** to add the `%appDomain%` from the [deployment Company Communicator](https://github.com/OfficeDev/microsoft-teams-apps-company-communicator/wiki/Deployment-guide) - e.g. appName.azurefd.net
+```JSON
+  "validDomains": [
+    "<<appDomain>>",
+    "*.powerapps.com"
+  ]
+```
+
+Last, update the version of the application (e.g. 1.0.0 --> 1.0.1)
+```JSON
+  "version": "1.0.x",
+```
+
+More info on Teams app manifest schema on this page - https://docs.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema
+
+### Step 3 - Update the application 
+
+ - Create a new app package: select the 3 files (JSON + 2 PNG) and generate a Zip. 
+
+   Note: Zip the files directly - NOT the folder that contains the files
+ - Upload the new Zip file in Teams Admin Center - https://admin.teams.microsot.com
+
+   Note: we assume that your application is already deployed in Teams app catalog. If not, review this [documentation](https://docs.microsoft.com/en-us/power-apps/teams/embed-teams-app).
+
+
 ## Configure Azure AD auth between Azure Function and Power Automate
 
 It is recommended and a best practice to activate Azure AD authentication whenever possible - We want to activate this configuration between Power Automate and the Azure Function.
